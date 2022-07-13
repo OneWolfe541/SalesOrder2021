@@ -1,0 +1,59 @@
+﻿
+@{
+    ViewBag.Title = "Add";
+}
+
+<h2>Add Election Order</h2>
+
+<div class="row">
+    <p><b>1. Enter an Election Date.</b></p>
+    <p><b>2. Enter an Election Title.</b></p>
+    <p><b>3. Click Create Eleciton Order button.</b></p>
+</div>
+
+<div class="row">
+    <div class="col-md-2">
+        Election Date
+        <input class="form-control text-box single-line datepicker" id="ElectionDate" name="ElectionDate" type="text" />
+    </div>
+    <div class="col-md-3">
+        Election Title
+        <input class="form-control text-box single-line" id="ElectionTitle" name="ElectionTitle" type="text" />
+    </div>
+    <div class="col-md-2">
+        <input data-val="true" id="SalesOrderNo" name="SalesOrderNo" type="hidden" value="@ViewBag.SalesOrder" />
+        <br />
+        <a id="btnGo" href="#" class="btn btn-success" onclick="AddElectionOrder()" style="font-size:20px; padding-top:2px; padding-bottom:2px;">Create Election Order</a>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        var applicationRoot = function () {
+            var appFolders = window.location.pathname.split('/');
+            return window.location.origin + "/" + appFolders[1];
+        }
+
+        $(function () { // will trigger when the document is ready
+            $('.datepicker').datepicker(); //Initialise any date pickers
+        });
+
+        var AddElectionOrder = function () {
+            console.log($("#ElectionDate").val());
+            console.log($("#ElectionTitle").val());
+            console.log($("#SalesOrderNo").val());
+
+            if ($('#ElectionDate').val() === '') {
+                console.log("No date selected");
+            }
+            else if ($('#ElectionTitle').val() === '')
+            {
+                console.log("No title entered");
+            }
+            else {
+                window.location.replace("../Election/Create?so=" + $("#SalesOrderNo").val() + "&date=" + $("#ElectionDate").val() + "&title=" + $("#ElectionTitle").val());
+            }
+        };
+    </script>
+}
+

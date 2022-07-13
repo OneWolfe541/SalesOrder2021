@@ -1,0 +1,161 @@
+﻿@model List<SalesOrder2021.Models.ElectionCalendarDetails>
+
+@{
+    ViewBag.Title = "Election Calendar";
+}
+
+<style>
+    .table_header {
+        border: 1px solid black;
+        padding: 2px 5px 0px 5px;
+        font-weight: 600;
+    }
+
+    .table_subheader {
+        border-bottom: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_content {
+        border: 1px solid black;
+        text-align: center;
+        vertical-align: top;
+        padding: 2px 5px 0px 5px;
+    }
+
+    .table_content_large {
+        border: 1px solid black;
+        text-align: center;
+        font-size: 24px;
+        padding: 10px;
+    }
+
+    .row_separator {
+        border: 2px solid black;
+    }
+</style>
+
+<br />
+
+<div style="text-align:center;">
+    @Html.ActionLink("< Prev", "PreviousMonth", "Calendar", new { date = ViewBag.CurrentDate }, new { @class = "btn btn-primary link_small" })
+
+    @Html.ActionLink("Daily", "Daily", "Calendar", new { date = ViewBag.CurrentDate }, new { @class = "btn btn-primary link_small" })
+
+    @Html.ActionLink("Next >", "NextMonth", "Calendar", new { date = ViewBag.CurrentDate }, new { @class = "btn btn-primary link_small" })
+</div>
+
+<br />
+
+<div class="row">
+    <div class="col-md-5">
+        <img src='@Url.Content("~/Images/AESslug.png")' width="460" />
+    </div>
+
+    <div class="col-md-5" style="text-align:center;">
+        <h2>Election Calendar - Monthly</h2>
+    </div>
+</div>
+
+@if (Model != null)
+{
+    foreach (var item in Model)
+    {
+        <div class="row">
+            <hr />
+            <div class="col-md-3">
+                <table style="width:100%;">
+                    <tr>
+                        <td style="text-align:center; width:70px;">
+                            <table style="width:70px;" align="center">
+                                <tr>
+                                    <td class="table_content">
+                                        @item.ElectionDate.Value.ToString("MMMM")
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="table_content" style="font-size:28px;">
+                                        @item.ElectionDate.Value.ToString("dd")
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="table_content">
+                                        @item.ElectionDate.Value.ToString("dddd")
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="text-align:left; width:150px;">
+                            <table style="width:150px;">
+                                <tr>
+                                    <td class="table_header" style="text-align:left; font-size:12px; border:0px solid transparent;">
+                                        Sales Order
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="table_content" style="text-align:center;">
+                                        <a class="link_small" href="/salesorder/Sales/Order?so=@item.SalesOrderNo">@item.SalesOrderNo</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="table_header" style="text-align:left; font-size:12px; border:0px solid transparent;">
+                                        Election Order
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="table_content" style="text-align:center;">
+                                        <a class="link_small" href="/salesorder/Election/Order?so=@item.SalesOrderNo">@item.ElectionOrderNo</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table_header" style="text-align:center; border:0px solid transparent;" colspan="2">
+                            @item.GovType Election
+                        </td>
+                    </tr>
+                </table>
+                    
+            </div>
+
+            <div class="col-md-7">
+                <table style="width:100%;">
+                    <tr>
+                        <td class="table_header" style="text-align:left; border:0px solid transparent; font-size:16px;" colspan="2">
+                            &nbsp;
+                            @Html.DisplayFor(modelItem => item.CustomerName, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table_content" style="text-align:left; border:0px solid transparent; font-size:14px;" colspan="2">
+                            &nbsp;
+                            @Html.DisplayFor(modelItem => item.ElectionTitle, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table_content" style="text-align:left; font-size:12px; border:0px solid transparent;" colspan="2">
+                            &nbsp;
+                            Election Calendar
+                        </td>
+                    </tr>
+                    @foreach (var subitem in item.EventsCalendar)
+                    {
+                        <tr>
+                            <td class="table_content" style="text-align:left; font-size:12px; border:0px solid transparent; width:20%; vertical-align:top;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => subitem.EventDate)
+                            </td>
+                            <td class="table_content" style="text-align:left; font-size:12px; border:0px solid transparent;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => subitem.ElectionEvent)
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    }
+}
+

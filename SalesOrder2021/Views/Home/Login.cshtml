@@ -1,0 +1,41 @@
+﻿@model  SalesOrder2021.Models.User
+
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_LayoutBlank.cshtml";
+}
+
+<h2>Sign In</h2>
+
+<hr />
+
+@using (Html.BeginForm("Login", "Home", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="row">
+        <span>Enter your user name and password</span>
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    </div>
+
+    <br />
+    <div class="row">
+        User Name <br />
+        @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control" } })
+    </div>
+
+    <br />
+    <div class="row">
+        Password
+        @Html.PasswordFor(model => model.Password, new { @class = "form-control text-box single-line" })
+    </div>
+
+    <br />
+    <div class="row">
+        <input id="btnSubmit" type="submit" value="Ok" class="btn btn-success" style="width:100px; font-size:24px;" />
+        &nbsp;
+        &nbsp;
+        <input id="btnCancel" type="button" value="Cancel" class="btn btn-danger" onclick="ClearList()" style="font-size:24px;" />
+    </div>
+}
+

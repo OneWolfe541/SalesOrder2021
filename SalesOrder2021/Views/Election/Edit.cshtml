@@ -1,0 +1,932 @@
+﻿@model SalesOrder2021.Models.ElectionOrderDetails
+
+@{
+    /**/
+
+    ViewBag.Title = "Election Order";
+}
+
+<style>
+    .table_header {
+        border: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_subheader {
+        border-bottom: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_content {
+        border: 1px solid black;
+        text-align: center;
+        vertical-align: top;
+        padding: 5px;
+    }
+
+    .table_content_large {
+        border: 1px solid black;
+        text-align: center;
+        font-size: 24px;
+        padding: 10px;
+    }
+</style>
+
+@if (Model != null)
+{
+    <h2>Election Order Edit: @Html.DisplayFor(model => model.ElectionOrderNo)</h2>
+
+    <div class="form-horizontal">
+        @using (Html.BeginForm("UpdateElectionOrder", "Election", FormMethod.Post, new { id = "ElectionOrderForm" }))
+        {
+            @Html.HiddenFor(model => model.ElectionOrderNo)
+            <input data-val="true" id="CurrentTab" name="CurrentTab" type="hidden" value="@ViewBag.CurrentTab" />
+            <div class="row">
+                <div class="col-md-2">
+                    Date Of Entry
+                    @Html.EditorFor(model => model.EntryDate, new { htmlAttributes = new { @class = "form-control datepicker", onchange = "UpdateElectionOrder()" } })
+                </div>
+                <div class="col-md-3">
+                    Entered By
+                    @*@Html.EditorFor(model => model.AESContactID, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateElectionOrder()", style = "max-width:620px;" } })*@
+                    @Html.DropDownListFor(model => model.AESContactID, (IEnumerable<SelectListItem>)ViewBag.EmployeeList, null, new { @class = "form-control", @onchange = "UpdateElectionOrder()", disabled = "disabled" })
+                </div>
+                <div class="col-md-5">
+                    Sales Order Number
+                    @Html.EditorFor(model => model.SalesOrderNo, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateElectionOrder()", style = "max-width:620px;", disabled = "disabled" } })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    Customer
+                    @*@Html.EditorFor(model => model.CustomerNo, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateElectionOrder()", style = "max-width:620px;" } })*@
+                    @Html.DropDownListFor(model => model.CustomerNo, (IEnumerable<SelectListItem>)ViewBag.CustomerList, null, new { @class = "form-control dropdown", @onchange = "UpdateElectionOrder()", style = "max-width:620px;" })
+                </div>
+                <div class="col-md-5">
+                    Contact For This Election
+                    @*@Html.EditorFor(model => model.ContactID, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateElectionOrder()", style = "max-width:620px;" } })*@
+                    @Html.DropDownListFor(model => model.ContactID, (IEnumerable<SelectListItem>)ViewBag.CustomerContactList, null, new { @class = "form-control dropdown", @onchange = "UpdateElectionOrder()", style = "max-width:620px;" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    Customer PO
+                    @Html.EditorFor(model => model.CustomerPO, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateElectionOrder()", style = "max-width:620px;" } })
+                </div>
+                <div class="col-md-2">
+                    Date Of Election
+                    @Html.EditorFor(model => model.ElectionDate, new { htmlAttributes = new { @class = "form-control datepicker", onchange = "UpdateElectionOrder()", style = "max-width:620px;" } })
+                </div>
+                <div class="col-md-2">
+                    Election Type
+                    @*@Html.EditorFor(model => model.ElectionType, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateElectionOrder()", style = "max-width:620px;" } })*@
+                    @Html.DropDownListFor(model => model.ElectionType, (IEnumerable<SelectListItem>)ViewBag.ElectionTypes, null, new { @class = "form-control dropdown", @onchange = "UpdateElectionOrder()", style = "max-width:620px;" })
+                </div>
+                <div class="col-md-2">
+                    Questions
+                    @Html.EditorFor(model => model.Questions, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateElectionOrder()", style = "max-width:620px;" } })
+                </div>
+                <div class="col-md-2">
+                    Districts
+                    @Html.EditorFor(model => model.Districts, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateElectionOrder()", style = "max-width:620px;" } })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-10">
+                    Election Title
+                    @Html.EditorFor(model => model.ElectionTitle, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateElectionOrder()", style = "max-width:1300px;" } })
+                </div>
+            </div>
+
+            <br />
+            <div class="row">
+                <div class="col-md-4 col-md-offset-3" style="border:1px solid lightgray;">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table style="width:100%;">
+                                <tr>
+                                    <td colspan="3" style="text-align:center;">
+                                        English Proclamation
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width:25px;">
+                                        @*<label><input type="checkbox" value="" checked="@Model.EngProc" onchange="UpdateElectionOrder()" id="EngProc" /></label>*@
+                                        @Html.CheckBoxFor(model => model.EngProc, new { htmlAttributes = new { @class = "form-control", id = "EngProc", style = "max-width:620px;" }, onchange = "UpdateElectionOrder()" })
+                                    </td>
+                                    <td>
+                                        Date Received
+                                    </td>
+                                    <td>
+                                        @Html.EditorFor(model => model.EngProcReceived, new { htmlAttributes = new { @class = "form-control datepicker", onblur = "UpdateElectionOrder()" } })
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table style="width:100%;">
+                                <tr>
+                                    <td colspan="3" style="text-align:center;">
+                                        Spanish Proclamation
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width:25px;">
+                                        <label>@*<input type="checkbox" value="" checked="@Model.SpnProc" onchange="UpdateElectionOrder()" id="SpnProc" />*@</label>
+                                        @Html.CheckBoxFor(model => model.SpnProc, new { htmlAttributes = new { @class = "form-control", id = "SpnProc", style = "max-width:620px;" }, onchange = "UpdateElectionOrder()" })
+                                    </td>
+                                    <td>
+                                        Date Received
+                                    </td>
+                                    <td>
+                                        @Html.EditorFor(model => model.SpnProcReceived, new { htmlAttributes = new { @class = "form-control datepicker", onblur = "UpdateElectionOrder()" } })
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table style="width:100%;">
+                                <tr>
+                                    <td colspan="3" style="text-align:center;">
+                                        Candidate Photo(s)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width:25px;">
+                                        @*<label><input type="checkbox" value="" checked="@Model.Photo" onchange="UpdateElectionOrder()" id="Photo" /></label>*@
+                                        @Html.CheckBoxFor(model => model.Photo, new { htmlAttributes = new { @class = "form-control", id = "Photo", style = "max-width:620px;" }, onchange = "UpdateElectionOrder()" })
+                                    </td>
+                                    <td>
+                                        Date Received
+                                    </td>
+                                    <td>
+                                        @Html.EditorFor(model => model.PhotoReceived, new { htmlAttributes = new { @class = "form-control datepicker", onblur = "UpdateElectionOrder()" } })
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table style="width:100%;">
+                                <tr>
+                                    <td style="width:25px;">
+                                        @*<label><input type="checkbox" value="" checked="@Model.Imaging" onchange="UpdateElectionOrder()" id="Imaging" /></label>*@
+                                        @Html.CheckBoxFor(model => model.Imaging, new { htmlAttributes = new { @class = "form-control", id = "Imaging", style = "max-width:620px;" }, onchange = "UpdateElectionOrder()" })
+                                    </td>
+                                    <td colspan="2" style="text-align:left;">
+                                        Imaging/Mailing Required
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table style="width:100%;">
+                                <tr>
+                                    <td style="width:25px;">
+                                        @*<label><input type="checkbox" value="" checked="@Model.NoScheduleRpt" onchange="UpdateElectionOrder()" id="NoScheduleRpt" /></label>*@
+                                        @Html.CheckBoxFor(model => model.NoScheduleRpt, new { htmlAttributes = new { @class = "form-control", id = "NoScheduleRpt", style = "max-width:620px;" }, onchange = "UpdateElectionOrder()" })
+                                    </td>
+                                    <td colspan="2">
+                                        Do Not Include On Election Schedule
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <br />
+
+            <div class="row">
+                <!-- https://www.tutorialrepublic.com/twitter-bootstrap-tutorial/bootstrap-tabs.php -->
+                <ul id="TabsMenu" class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a href="#calendar" class="nav-link active" data-toggle="tab">Calendar Events</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#candidates" class="nav-link" data-toggle="tab">Write In Candidates</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#ballot" class="nav-link" data-toggle="tab">Ballot On Demand</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#machines" class="nav-link" data-toggle="tab">Voting Machines</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#instructions" class="nav-link" data-toggle="tab">Special Instructions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#contacts" class="nav-link" data-toggle="tab">Additional Contacts</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade" id="calendar">
+                        <p>Calendar tab content ...</p>
+                        @if (Model.ElectionEventsCalendar != null)
+                        {
+                            foreach (var subitem in Model.ElectionEventsCalendar)
+                            {
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        @Html.HiddenFor(modelItem => subitem.EventRecordID)
+                                        Event
+                                        @*@Html.EditorFor(modelItem => subitem.EventID, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateCalendarItem()", style = "max-width:620px;" } })*@
+                                        @Html.DropDownListFor(modelItem => subitem.EventID, new SelectList(ViewBag.EventsList, "Value", "Text", subitem.EventID), " ", new { @class = "form-control", id = string.Format("item_EventID_{0}", subitem.EventRecordID), @onchange = string.Format("UpdateCalendarItem({0})", subitem.EventRecordID), style = "max-width:620px;" })
+                                    </div>
+                                    <div class="col-md-2">
+                                        Date
+                                        @Html.EditorFor(modelItem => subitem.EventDate, new { htmlAttributes = new { @class = "form-control datepicker", id = string.Format("item_EventDate_{0}", subitem.EventRecordID), onblur = string.Format("UpdateCalendarItem({0})", subitem.EventRecordID), onchange = string.Format("UpdateCalendarItem({0})", subitem.EventRecordID), style = "max-width:620px;" } })
+                                    </div>
+                                    <div class="col-md-2">
+                                        AES Representative
+                                        @Html.EditorFor(modelItem => subitem.EventPerson, new { htmlAttributes = new { @class = "form-control", id = string.Format("item_EventPerson_{0}", subitem.EventRecordID), onblur = string.Format("UpdateCalendarItem({0})", subitem.EventRecordID), style = "max-width:620px;" } })
+                                    </div>
+                                    <div class="col-md-2">
+                                        Location
+                                        @Html.EditorFor(modelItem => subitem.EventLocation, new { htmlAttributes = new { @class = "form-control", id = string.Format("item_EventLocation_{0}", subitem.EventRecordID), onblur = string.Format("UpdateCalendarItem({0})", subitem.EventRecordID), style = "max-width:620px;" } })
+                                    </div>
+                                </div>
+                            }
+                        }
+                        <div class="row">
+                            <hr />
+                            <div class="col-md-4">
+                                Event
+                                @*@Html.EditorFor(modelItem => subitem.EventID, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateCalendarItem()", style = "max-width:620px;" } })*@
+                                @*@Html.DropDownListFor(modelItem => subitem.EventID, new SelectList(ViewBag.EventsList, "Value", "Text", subitem.EventID), null, new { @class = "form-control", id = string.Format("item_StatusID_{0}", subitem.EventRecordID), @onchange = string.Format("UpdateCalendarItem({0})", subitem.EventRecordID), style = "max-width:620px;" })*@
+                                @Html.DropDownList("NewEventID", (IEnumerable<SelectListItem>)ViewBag.EventsList, " ", new { @class = "form-control", style = "max-width:620px;" })
+                            </div>
+                            <div class="col-md-2">
+                                Date
+                                @*@Html.EditorFor(modelItem => subitem.EventDate, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateCalendarItem()", style = "max-width:620px;" } })*@
+                                <input class="form-control text-box single-line datepicker" id="NewEventDate" name="NewEventDate" type="text" />
+                            </div>
+                            <div class="col-md-2">
+                                AES Representative
+                                @*@Html.EditorFor(modelItem => subitem.EventPerson, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateCalendarItem()", style = "max-width:620px;" } })*@
+                                <input class="form-control text-box single-line" id="NewEventRep" name="NewEventRep" type="text" />
+                            </div>
+                            <div class="col-md-2">
+                                Location
+                                @*@Html.EditorFor(modelItem => subitem.EventLocation, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateCalendarItem()", style = "max-width:620px;" } })*@
+                                <input class="form-control text-box single-line" id="NewEventLocation" name="NewEventLocation" type="text" />
+                            </div>
+                            <div class="col-md-2">
+                                <br />
+                                @*@Html.ActionLink("Add Event", "AddEvent", "Election", new { so = Model.ElectionOrderNo }, new { @class = "btn btn-primary link_small" })*@
+                                <a class="btn btn-primary link_small" href="#" onclick="AddCalendarItem()">Add Event</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="candidates">
+                        <p>Candidates tab content ...</p>
+                        @if (Model.WriteInCandidates != null)
+                        {
+                            foreach (var subitem in Model.WriteInCandidates)
+                            {
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        @Html.HiddenFor(modelItem => subitem.WriteinID)
+                                        Write-In Candidate Name
+                                        @Html.EditorFor(modelItem => subitem.WriteInName, new { htmlAttributes = new { @class = "form-control", id = string.Format("item_WriteInName_{0}", subitem.WriteinID), onblur = string.Format("UpdateWriteInItem({0})", subitem.WriteinID), style = "max-width:620px;" } })
+                                    </div>
+                                    <div class="col-md-3">
+                                        Write-In Ballot Style
+                                        @Html.EditorFor(modelItem => subitem.WriteInStyle, new { htmlAttributes = new { @class = "form-control", id = string.Format("item_WriteInStyle_{0}", subitem.WriteinID), onblur = string.Format("UpdateWriteInItem({0})", subitem.WriteinID), style = "max-width:620px;" } })
+                                    </div>
+                                    <div class="col-md-3">
+                                        Write-In Office
+                                        @Html.EditorFor(modelItem => subitem.WriteInOffice, new { htmlAttributes = new { @class = "form-control", id = string.Format("item_WriteInOffice_{0}", subitem.WriteinID), onblur = string.Format("UpdateWriteInItem({0})", subitem.WriteinID), style = "max-width:620px;" } })
+                                    </div>
+                                </div>
+                            }
+                        }
+                        <div class="row">
+                            <hr />
+                            <div class="col-md-3">
+                                Write-In Candidate Name
+                                @*@Html.EditorFor(modelItem => subitem.WriteInName, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateWriteInItem()", style = "max-width:620px;" } })*@
+                                <input class="form-control text-box single-line" id="NewCandidateName" name="NewCandidateName" type="text" style="max-width:620px;" />
+                            </div>
+                            <div class="col-md-3">
+                                Write-In Ballot Style
+                                @*@Html.EditorFor(modelItem => subitem.WriteInStyle, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateWriteInItem()", style = "max-width:620px;" } })*@
+                                <input class="form-control text-box single-line" id="NewCandidateStyle" name="NewCandidateStyle" type="text" style="max-width:620px;" />
+                            </div>
+                            <div class="col-md-3">
+                                Write-In Office
+                                @*@Html.EditorFor(modelItem => subitem.WriteInOffice, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateWriteInItem()", style = "max-width:620px;" } })*@
+                                <input class="form-control text-box single-line" id="NewCandidateOffice" name="NewCandidateOffice" type="text" style="max-width:620px;" />
+                            </div>
+                            <div class="col-md-2">
+                                <br />
+                                @*@Html.ActionLink("Add Candidate", "AddCandidate", "Election", new { so = Model.ElectionOrderNo }, new { @class = "btn btn-primary link_small" })*@
+                                <a class="btn btn-primary link_small" href="#" onclick="AddWriteInItem()">Add Candidate</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="ballot">
+                        <p>Ballot On Demand tab content ...</p>
+                        <div class="row">
+                            <div class="col-md-2">
+                                Ballot On Demand System(s)
+                                @*<label><input type="checkbox" value="" checked="@Model.BOD" onchange="UpdateElectionOrder()" id="BOD" /></label>*@
+                                @Html.CheckBoxFor(model => model.BOD, new { htmlAttributes = new { onchange = "UpdateElectionOrder()" } })
+                            </div>
+                            <div class="col-md-6">
+                                Description
+                                @Html.EditorFor(model => model.BODDescription, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateElectionOrder()", style = "max-width:1300px;" } })
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2">
+                                Number Of BOD Systems(s)
+                                @Html.EditorFor(model => model.BODSystems, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateElectionOrder()", style = "max-width:620px;" } })
+                            </div>
+                            <div class="col-md-2">
+                                Networking
+                                @*@Html.EditorFor(model => model.BODNetwork, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateElectionOrder()", style = "max-width:620px;" } })*@
+                                @Html.DropDownListFor(model => model.BODNetwork, (IEnumerable<SelectListItem>)ViewBag.BODNetworkingList, " ", new { @class = "form-control", @onchange = "UpdateElectionOrder()" })
+                            </div>
+                            <div class="col-md-2">
+                                Date We Received Data
+                                @Html.EditorFor(model => model.BODData, new { htmlAttributes = new { @class = "form-control datepicker", onblur = "UpdateElectionOrder()", style = "max-width:620px;" } })
+                            </div>
+                            <div class="col-md-2">
+                                Date Of System Setup
+                                @Html.EditorFor(model => model.BODSetup, new { htmlAttributes = new { @class = "form-control datepicker", onblur = "UpdateElectionOrder()", style = "max-width:620px;" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="machines">
+                        <p>Voting Machines In This Election</p>
+                        @if (Model.VotingEquipment != null)
+                        {
+                            foreach (var subitem in Model.VotingEquipment)
+                            {
+                                <div class="row">
+                                    @Html.HiddenFor(modelItem => subitem.VMEquipID)
+                                    <div class="col-md-2">
+                                        Voting Machine(s) Quantity
+                                        @Html.EditorFor(modelItem => subitem.VotingMach, new { htmlAttributes = new { @class = "form-control", id = string.Format("item_VotingMach_{0}", subitem.VMEquipID), onblur = string.Format("UpdateVotingMachineItem({0})", subitem.VMEquipID), style = "max-width:620px;" } })
+                                    </div>
+                                    <div class="col-md-3">
+                                        Status After Election
+                                        @*@Html.EditorFor(modelItem => subitem.VotingMachStatus, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateWriteInItem()", style = "max-width:620px;" } })*@
+                                        @Html.DropDownListFor(modelItem => subitem.VotingMachStatus, new SelectList(ViewBag.EquipmentStatusList, "Value", "Text", subitem.VotingMachStatus), null, new { @class = "form-control", id = string.Format("item_VotingMachStatus_{0}", subitem.VMEquipID), @onchange = string.Format("UpdateVotingMachineItem({0})", subitem.VMEquipID), style = "max-width:620px;" })
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Ballot Tub(s) Needed
+                                        @Html.EditorFor(modelItem => subitem.BallotTub, new { htmlAttributes = new { @class = "form-control", id = string.Format("item_BallotTub_{0}", subitem.VMEquipID), onblur = string.Format("UpdateVotingMachineItem({0})", subitem.VMEquipID), style = "max-width:620px;" } })
+                                    </div>
+                                    <div class="col-md-3">
+                                        Status After Election
+                                        @*@Html.EditorFor(modelItem => subitem.BallotTubStatus, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateWriteInItem()", style = "max-width:620px;" } })*@
+                                        @Html.DropDownListFor(modelItem => subitem.BallotTubStatus, new SelectList(ViewBag.EquipmentStatusList, "Value", "Text", subitem.BallotTubStatus), null, new { @class = "form-control", id = string.Format("item_BallotTubStatus_{0}", subitem.VMEquipID), @onchange = string.Format("UpdateVotingMachineItem({0})", subitem.VMEquipID), style = "max-width:620px;" })
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Transfer Case(s) Needed
+                                        @Html.EditorFor(modelItem => subitem.TransferCase, new { htmlAttributes = new { @class = "form-control", id = string.Format("item_TransferCase_{0}", subitem.VMEquipID), onblur = string.Format("UpdateVotingMachineItem({0})", subitem.VMEquipID), style = "max-width:620px;" } })
+                                    </div>
+                                    <div class="col-md-3">
+                                        Status After Election
+                                        @*@Html.EditorFor(modelItem => subitem.TransferCaseStatus, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateWriteInItem()", style = "max-width:620px;" } })*@
+                                        @Html.DropDownListFor(modelItem => subitem.TransferCaseStatus, new SelectList(ViewBag.EquipmentStatusList, "Value", "Text", subitem.TransferCaseStatus), null, new { @class = "form-control", id = string.Format("item_TransferCaseStatus_{0}", subitem.VMEquipID), @onchange = string.Format("UpdateVotingMachineItem({0})", subitem.VMEquipID), style = "max-width:620px;" })
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        Voting Booth(s) Needed
+                                        @Html.EditorFor(modelItem => subitem.VotingBooth, new { htmlAttributes = new { @class = "form-control", id = string.Format("item_VotingBooth_{0}", subitem.VMEquipID), onblur = string.Format("UpdateVotingMachineItem({0})", subitem.VMEquipID), style = "max-width:620px;" } })
+                                    </div>
+                                    <div class="col-md-3">
+                                        Status After Election
+                                        @*@Html.EditorFor(modelItem => subitem.VotingBoothStatus, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateWriteInItem()", style = "max-width:620px;" } })*@
+                                        @Html.DropDownListFor(modelItem => subitem.VotingBoothStatus, new SelectList(ViewBag.EquipmentStatusList, "Value", "Text", subitem.VotingBoothStatus), null, new { @class = "form-control", id = string.Format("item_VotingBoothStatus_{0}", subitem.VMEquipID), @onchange = string.Format("UpdateVotingMachineItem({0})", subitem.VMEquipID), style = "max-width:620px;" })
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        Polling Place
+                                        @Html.DropDownListFor(modelItem => subitem.PollingPlace, new SelectList(ViewBag.VotingMachineList, "Value", "Text", subitem.PollingPlace), null, new { @class = "form-control", id = string.Format("item_PollingPlace_{0}", subitem.VMEquipID), @onchange = string.Format("UpdateVotingMachineItem({0})", subitem.VMEquipID), style = "max-width:620px;" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        Absentee
+                                        @Html.DropDownListFor(modelItem => subitem.Absentee, new SelectList(ViewBag.VotingMachineList, "Value", "Text", subitem.Absentee), null, new { @class = "form-control", id = string.Format("item_Absentee_{0}", subitem.VMEquipID), @onchange = string.Format("UpdateVotingMachineItem({0})", subitem.VMEquipID), style = "max-width:620px;" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        Early Voting
+                                        @Html.DropDownListFor(modelItem => subitem.EarlyVoting, new SelectList(ViewBag.VotingMachineList, "Value", "Text", subitem.EarlyVoting), null, new { @class = "form-control", id = string.Format("item_EarlyVoting_{0}", subitem.VMEquipID), @onchange = string.Format("UpdateVotingMachineItem({0})", subitem.VMEquipID), style = "max-width:620px;" })
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <div class="col-md-2">
+                                    Voting Machine(s) Quantity
+                                    @*@Html.EditorFor(modelItem => subitem.VotingMach, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateWriteInItem()", style = "max-width:620px;" } })*@
+                                    <input class="form-control text-box single-line" id="NewVotingMachine" name="NewVotingMachine" type="text" />
+                                </div>
+                                <div class="col-md-3">
+                                    Status After Election
+                                    @*@Html.EditorFor(modelItem => subitem.VotingMachStatus, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateWriteInItem()", style = "max-width:620px;" } })*@
+                                    @*<input class="form-control text-box single-line" id="NewVotingMachineStatus" name="NewVotingMachineStatus" type="text" />*@
+                                    @Html.DropDownList("NewVotingMachineStatus", (IEnumerable<SelectListItem>)ViewBag.EquipmentStatusList, new { @class = "form-control", style = "max-width:620px;" })
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    Ballot Tub(s) Needed
+                                    @*@Html.EditorFor(modelItem => subitem.BallotTub, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateWriteInItem()", style = "max-width:620px;" } })*@
+                                    <input class="form-control text-box single-line" id="NewBallotTub" name="NewBallotTub" type="text" />
+                                </div>
+                                <div class="col-md-3">
+                                    Status After Election
+                                    @*@Html.EditorFor(modelItem => subitem.BallotTubStatus, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateWriteInItem()", style = "max-width:620px;" } })*@
+                                    @*<input class="form-control text-box single-line" id="NewBallotTubStatus" name="NewBallotTubStatus" type="text" />*@
+                                    @Html.DropDownList("NewBallotTubStatus", (IEnumerable<SelectListItem>)ViewBag.EquipmentStatusList, new { @class = "form-control", style = "max-width:620px;" })
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    Transfer Case(s) Needed
+                                    @*@Html.EditorFor(modelItem => subitem.TransferCase, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateWriteInItem()", style = "max-width:620px;" } })*@
+                                    <input class="form-control text-box single-line" id="NewTransferCase" name="NewTransferCase" type="text" />
+                                </div>
+                                <div class="col-md-3">
+                                    Status After Election
+                                    @*@Html.EditorFor(modelItem => subitem.TransferCaseStatus, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateWriteInItem()", style = "max-width:620px;" } })*@
+                                    @*<input class="form-control text-box single-line" id="NewTransferCaseStatus" name="NewTransferCaseStatus" type="text" />*@
+                                    @Html.DropDownList("NewTransferCaseStatus", (IEnumerable<SelectListItem>)ViewBag.EquipmentStatusList, new { @class = "form-control", style = "max-width:620px;" })
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    Voting Booth(s) Needed
+                                    @*@Html.EditorFor(modelItem => subitem.VotingBooth, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateWriteInItem()", style = "max-width:620px;" } })*@
+                                    <input class="form-control text-box single-line" id="NewVotingBooth" name="NewVotingBooth" type="text" />
+                                </div>
+                                <div class="col-md-3">
+                                    Status After Election
+                                    @*@Html.EditorFor(modelItem => subitem.VotingBoothStatus, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateWriteInItem()", style = "max-width:620px;" } })*@
+                                    @*<input class="form-control text-box single-line" id="NewVotingBoothStatus" name="NewVotingBoothStatus" type="text" />*@
+                                    @Html.DropDownList("NewVotingBoothStatus", (IEnumerable<SelectListItem>)ViewBag.EquipmentStatusList, new { @class = "form-control", style = "max-width:620px;" })
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    Polling Place
+                                    @*@Html.DropDownListFor(modelItem => subitem.PollingPlace, new SelectList(ViewBag.VotingMachineList, "Value", "Text", subitem.PollingPlace), null, new { @class = "form-control", id = string.Format("item_PollingPlace_{0}", subitem.VMEquipID), @onchange = string.Format("UpdateVotingMachineItem({0})", subitem.VMEquipID), style = "max-width:620px;" })*@
+                                    @Html.DropDownList("NewPollingPlace", (IEnumerable<SelectListItem>)ViewBag.VotingMachineList, new { @class = "form-control", style = "max-width:620px;" })
+                                </div>
+                                <div class="col-md-3">
+                                    Absentee
+                                    @*@Html.DropDownListFor(modelItem => subitem.Absentee, new SelectList(ViewBag.VotingMachineList, "Value", "Text", subitem.Absentee), null, new { @class = "form-control", id = string.Format("item_Absentee_{0}", subitem.VMEquipID), @onchange = string.Format("UpdateVotingMachineItem({0})", subitem.VMEquipID), style = "max-width:620px;" })*@
+                                    @Html.DropDownList("NewAbsentee", (IEnumerable<SelectListItem>)ViewBag.VotingMachineList, new { @class = "form-control", style = "max-width:620px;" })
+                                </div>
+                                <div class="col-md-3">
+                                    Early Voting
+                                    @*@Html.DropDownListFor(modelItem => subitem.EarlyVoting, new SelectList(ViewBag.VotingMachineList, "Value", "Text", subitem.EarlyVoting), null, new { @class = "form-control", id = string.Format("item_EarlyVoting_{0}", subitem.VMEquipID), @onchange = string.Format("UpdateVotingMachineItem({0})", subitem.VMEquipID), style = "max-width:620px;" })*@
+                                    @Html.DropDownList("NewEarlyVoting", (IEnumerable<SelectListItem>)ViewBag.VotingMachineList, new { @class = "form-control", style = "max-width:620px;" })
+                                </div>
+                                <div class="col-md-2">
+                                    <br />
+                                    @*@Html.ActionLink("Add Machine", "AddMachine", "Election", new { so = Model.ElectionOrderNo }, new { @class = "btn btn-primary link_small" })*@
+                                    <a class="btn btn-primary link_small" href="#" onclick="AddVotingMachineItem()">Add Machine</a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="tab-pane fade" id="instructions">
+                        <p>Special Instructions tab content ...</p>
+                        @if (Model.Instructions != null && Model.Instructions.Count() > 0)
+                        {
+                            foreach (var subitem in Model.Instructions)
+                            {
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        Special Instructions
+                                        <textarea cols="20" class="form-control" onblur=@string.Format("UpdateInstructionsItem({0})", subitem.InstructionID) style="max-width:1300px; height:400px; width:100%;" id="SpecialInstructions" name="SpecialInstructions" rows="2">@subitem.ElectionInstructions</textarea>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <div class="col-md-10">
+                                    Special Instructions
+                                    <textarea cols="20" class="form-control" style="max-width:1300px; height:400px; width:100%;" id="NewSpecialInstructions" name="NewSpecialInstructions" rows="2"></textarea>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <br />
+                                    @*@Html.ActionLink("Add Special Instructions", "AddInstructions", "Election", new { so = Model.ElectionOrderNo }, new { @class = "btn btn-primary link_small" })*@
+                                    <a class="btn btn-primary link_small" href="#" onclick="AddInstructionsItem()">Add Special Instructions</a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="tab-pane fade" id="contacts">
+                        <p>Additional Contacts tab content ...</p>
+                        @if (Model.Contacts != null)
+                        {
+                            foreach (var subitem in Model.Contacts)
+                            {
+                                <div class="row">
+                                    @Html.HiddenFor(modelItem => subitem.ElectionContactID)
+                                    <div class="col-md-4">
+                                        Special Instructions
+                                        @Html.EditorFor(modelItem => subitem.Request, new { htmlAttributes = new { @class = "form-control", id = string.Format("item_Request_{0}", subitem.ElectionContactID), onblur = string.Format("UpdateContactItem({0})", subitem.ElectionContactID), style = "max-width:620px;" } })
+                                    </div>
+                                    <div class="col-md-3">
+                                        Customer Contact
+                                        @*@Html.EditorFor(modelItem => subitem.ContactID, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateContactItem()", style = "max-width:620px;" } })*@
+                                        @Html.DropDownListFor(modelItem => subitem.ContactID, new SelectList(ViewBag.CustomerContactList, "Value", "Text", subitem.ContactID), " ", new { @class = "form-control", id = string.Format("item_ContactID_{0}", subitem.ElectionContactID), @onchange = string.Format("UpdateContactItem({0})", subitem.ElectionContactID), style = "max-width:620px;" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        Ship To
+                                        @*@Html.EditorFor(modelItem => subitem.ShipAddressID, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateContactItem()", style = "max-width:620px;" } })*@
+                                        @Html.DropDownListFor(modelItem => subitem.ShipAddressID, new SelectList(ViewBag.CustomerAddressList, "Value", "Text", subitem.ShipAddressID), " ", new { @class = "form-control", id = string.Format("item_ShipAddressID_{0}", subitem.ElectionContactID), @onchange = string.Format("UpdateContactItem({0})", subitem.ElectionContactID), style = "max-width:620px;" })
+                                    </div>
+                                </div>
+                            }
+                        }
+                        <div class="row">
+                            <div class="col-md-4">
+                                Special Instructions
+                                @*@Html.EditorFor(modelItem => subitem.Request, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateContactItem()", style = "max-width:620px;" } })*@
+                                <input class="form-control text-box single-line" id="NewConactRequest" name="NewConactRequest" type="text" style="max-width:620px;" />
+                            </div>
+                            <div class="col-md-3">
+                                Customer Contact
+                                @*@Html.EditorFor(modelItem => subitem.ContactID, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateContactItem()", style = "max-width:620px;" } })*@
+                                @*@Html.DropDownListFor(modelItem => subitem.ContactID, new SelectList(ViewBag.CustomerContactList, "Value", "Text", subitem.ContactID), null, new { @class = "form-control", id = string.Format("item_ContactID_{0}", subitem.ElectionContactID), @onchange = string.Format("UpdateContactItem({0})", subitem.ElectionContactID), style = "max-width:620px;" })*@
+                                @Html.DropDownList("NewContactID", (IEnumerable<SelectListItem>)ViewBag.CustomerContactList, " ", new { @class = "form-control", style = "max-width:620px;" })
+                            </div>
+                            <div class="col-md-3">
+                                Ship To
+                                @*@Html.EditorFor(modelItem => subitem.ShipAddressID, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateContactItem()", style = "max-width:620px;" } })*@
+                                @*@Html.DropDownListFor(modelItem => subitem.ShipAddressID, new SelectList(ViewBag.CustomerAddressList, "Value", "Text", subitem.ShipAddressID), null, new { @class = "form-control", id = string.Format("item_ShipAddressID_{0}", subitem.ElectionContactID), @onchange = string.Format("UpdateContactItem({0})", subitem.ElectionContactID), style = "max-width:620px;" })*@
+                                @Html.DropDownList("NewConactAddressID", (IEnumerable<SelectListItem>)ViewBag.CustomerAddressList, " ", new { @class = "form-control", style = "max-width:620px;" })
+                            </div>
+                            <div class="col-md-2">
+                                <br />
+                                @*@Html.ActionLink("Add Contact", "AddContact", "Election", new { so = Model.ElectionOrderNo }, new { @class = "btn btn-primary link_small" })*@
+                                <a class="btn btn-primary link_small" href="#" onclick="AddContactItem()">Add Contact</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-3 pull-right" style="text-align:right;">
+            @Html.ActionLink("Done", "Order", "Election", new { so = Model.SalesOrderNo }, new { @class = "btn btn-success link_small" })
+        </div>
+    </div>
+}
+
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            console.log($("#CurrentTab").val());
+            $('#TabsMenu a[href="#' + $("#CurrentTab").val() + '"]').tab('show');
+        });
+
+        $(function () { // will trigger when the document is ready
+            $('.datepicker').datepicker(); //Initialise any date pickers
+        });
+
+        var applicationRoot = function () {
+            var appFolders = window.location.pathname.split('/');
+            return window.location.origin + "/" + appFolders[1];
+        }
+
+        var UpdateElectionOrder = function () {
+            console.log($("#ElectionOrderForm").serialize());
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Election/UpdateElectionOrder",
+                data: $("#ElectionOrderForm").serialize(),
+                dataType: "json",
+                success: function (result) {
+
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Election Order did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var UpdateCalendarItem = function (id) {
+            console.log(id);
+
+            var calendarItem = {
+                EventRecordID: id,
+                EventID: $("#item_EventID_" + id).val(),
+                EventDate: $("#item_EventDate_" + id).val(),
+                EventPerson: $("#item_EventPerson_" + id).val(),
+                EventLocation: $("#item_EventLocation_" + id).val()
+            };
+            console.log(calendarItem);
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Election/UpdateEventItem",
+                data: calendarItem,
+                dataType: "json",
+                success: function (result) {
+
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Calendar Event did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var AddCalendarItem = function () {
+            var calendarItem = {
+                ElectionOrderNo: $("#ElectionOrderNo").val(),
+                EventID: $("#NewEventID").val(),
+                EventDate: $("#NewEventDate").val(),
+                EventPerson: $("#NewEventRep").val(),
+                EventLocation: $("#NewEventLocation").val()
+            };
+
+            console.log(calendarItem);
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Election/AddEventItem",
+                data: calendarItem,
+                dataType: "json",
+                success: function (result) {
+                    window.location.replace("../Election/Edit?eo=" + $("#ElectionOrderNo").val());
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Calendar Event did not save correctly.");
+                    }
+                }
+            });
+
+            window.location.replace("../Election/Edit?eo=" + $("#ElectionOrderNo").val());
+        };
+
+        var UpdateWriteInItem = function (id) {
+            console.log(id);
+
+            var candidateItem = {
+                WriteinID: id,
+                WriteInName: $("#item_WriteInName_" + id).val(),
+                WriteInStyle: $("#item_WriteInStyle_" + id).val(),
+                WriteInOffice: $("#item_WriteInOffice_" + id).val()
+            };
+            console.log(candidateItem);
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Election/UpdateCandidateItem",
+                data: candidateItem,
+                dataType: "json",
+                success: function (result) {
+                    window.location.replace("../Election/Edit?eo=" + $("#ElectionOrderNo").val() + "&tab=candidates");
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Write-In Candidate did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var AddWriteInItem = function () {
+            var candidateItem = {
+                ElectionOrderNo: $("#ElectionOrderNo").val(),
+                WriteInName: $("#NewCandidateName").val(),
+                WriteInStyle: $("#NewCandidateStyle").val(),
+                WriteInOffice: $("#NewCandidateOffice").val()
+            };
+
+            console.log(candidateItem);
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Election/AddCandidateItem",
+                data: candidateItem,
+                dataType: "json",
+                success: function (result) {
+                    window.location.replace("../Election/Edit?eo=" + $("#ElectionOrderNo").val() + "&tab=candidates");
+                    console.log("success");
+                }
+            });
+
+            window.location.replace("../Election/Edit?eo=" + $("#ElectionOrderNo").val() + "&tab=candidates");
+        };
+
+        var UpdateVotingMachineItem = function (id) {
+            console.log(id);
+
+            var machineItem = {
+                VMEquipID: id,
+                VotingMach: $("#item_VotingMach_" + id).val(),
+                VotingMachStatus: $("#item_VotingMachStatus_" + id).val(),
+                BallotTub: $("#item_BallotTub_" + id).val(),
+                BallotTubStatus: $("#item_BallotTubStatus_" + id).val(),
+                TransferCase: $("#item_TransferCase_" + id).val(),
+                TransferCaseStatus: $("#item_TransferCaseStatus_" + id).val(),
+                VotingBooth: $("#item_VotingBooth_" + id).val(),
+                VotingBoothStatus: $("#VotingBoothStatus" + id).val(),
+                PollingPlace: $("#item_PollingPlace_" + id).val(),
+                Absentee: $("#item_Absentee_" + id).val(),
+                EarlyVoting: $("#item_EarlyVoting_" + id).val()
+            };
+            console.log(machineItem);
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Election/UpdateMachineItem",
+                data: machineItem,
+                dataType: "json",
+                success: function (result) {
+                    window.location.replace("../Election/Edit?eo=" + $("#ElectionOrderNo").val() + "&tab=machines");
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Voting Machines did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var AddVotingMachineItem = function () {
+            var machineItem = {
+                ElectionOrderNo: $("#ElectionOrderNo").val(),
+                VotingMach: $("#NewVotingMachine").val(),
+                VotingMachStatus: $("#NewVotingMachineStatus").val(),
+                BallotTub: $("#NewBallotTub").val(),
+                BallotTubStatus: $("#NewBallotTubStatus").val(),
+                TransferCase: $("#NewTransferCase").val(),
+                TransferCaseStatus: $("#NewTransferCaseStatus").val(),
+                VotingBooth: $("#NewVotingBooth").val(),
+                VotingBoothStatus: $("#NewVotingBoothStatus").val(),
+                PollingPlace: $("#NewPollingPlace").val(),
+                Absentee: $("#NewAbsentee").val(),
+                EarlyVoting: $("#NewEarlyVoting").val()
+            };
+
+            console.log(machineItem);
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Election/AddMachineItem",
+                data: machineItem,
+                dataType: "json",
+                success: function (result) {
+                    window.location.replace("../Election/Edit?eo=" + $("#ElectionOrderNo").val() + "&tab=machines");
+                    console.log("success");
+                }
+            });
+            window.location.replace("../Election/Edit?eo=" + $("#ElectionOrderNo").val() + "&tab=machines");
+        };
+
+        var UpdateInstructionsItem = function (id) {
+            console.log(id);
+
+            var instructionItem = {
+                InstructionID: id,
+                ElectionInstructions: $("#SpecialInstructions").val()
+            };
+            console.log(instructionItem);
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Election/UpdateSpecialInstructions",
+                data: instructionItem,
+                dataType: "json",
+                success: function (result) {
+                    window.location.replace("../Election/Edit?eo=" + $("#ElectionOrderNo").val() + "&tab=instructions");
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Special Instructions did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var AddInstructionsItem = function () {
+            var instructionItem = {
+                ElectionOrderNo: $("#ElectionOrderNo").val(),
+                ElectionInstructions: $("#NewSpecialInstructions").val()
+            };
+
+            console.log(instructionItem);
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Election/AddSpecialInstructions",
+                data: instructionItem,
+                dataType: "json",
+                success: function (result) {
+                    window.location.replace("../Election/Edit?eo=" + $("#ElectionOrderNo").val() + "&tab=instructions");
+                    console.log("success");
+                }
+            });
+
+            window.location.replace("../Election/Edit?eo=" + $("#ElectionOrderNo").val() + "&tab=instructions");
+        };
+
+        var UpdateContactItem = function (id) {
+            console.log(id);
+
+            var contactItem = {
+                ElectionContactID: id,
+                Request: $("#item_Request_" + id).val(),
+                ContactID: $("#item_ContactID_" + id).val(),
+                ShipAddressID: $("#item_ShipAddressID_" + id).val()
+            };
+            console.log(contactItem);
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Election/UpdateContacts",
+                data: contactItem,
+                dataType: "json",
+                success: function (result) {
+                    window.location.replace("../Election/Edit?eo=" + $("#ElectionOrderNo").val() + "&tab=contacts");
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Special Instructions did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var AddContactItem = function () {
+            var contactItem = {
+                ElectionOrderNo: $("#ElectionOrderNo").val(),
+                Request: $("#NewConactRequest").val(),
+                ContactID: $("#NewContactID").val(),
+                ShipAddressID: $("#NewConactAddressID").val()
+            };
+
+            console.log(contactItem);
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Election/AddContacts",
+                data: contactItem,
+                dataType: "json",
+                success: function (result) {
+                    window.location.replace("../Election/Edit?eo=" + $("#ElectionOrderNo").val() + "&tab=contacts");
+                    console.log("success");
+                },
+                error: function (result) {
+                    console.log(result);
+                    window.location.replace("../Election/Edit?eo=" + $("#ElectionOrderNo").val() + "&tab=contacts");
+                }
+            });
+
+            //window.location.replace("../Election/Edit?eo=" + $("#ElectionOrderNo").val() + "&tab=contacts");
+        };
+    </script>
+}
+

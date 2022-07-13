@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Sales Order</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @*<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">*@
+    @*<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">*@
+    @*<link href="~/Content/font-awesome/css/font-awesome.min.css" rel="stylesheet" />*@
+    @*<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/themes/base/jquery-ui.css">*@
+</head>
+<body>
+    @*https://bootsnipp.com/snippets/r1Pjd*@
+    <div class="nav-side-menu" id="sideNav">
+        @*@Html.ActionLink("Sales Order", "Index", "Home", new { area = "" }, new { @class = "brand" })*@
+        <a href='@Url.Action("Index", "Home")' class="brand" style="text-align:left;" alt="Sales Order" title="Sales Order">
+            <img src='@Url.Content("~/Images/AESLogo.png")' style="max-width:100%; height:auto;" alt="Sales Order" />
+            <b class="menuExpanded">Sales Order</b>
+        </a>
+
+        <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
+
+        <div class="menu-list">
+            <div class="hidden-xs" style="text-align:left; margin-left:12px; margin-top:8px; margin-bottom:5px; font-size:20px;">
+                <a href="#" class="menuExpanded" onclick="closeNav()"><i class="fa fa-bars fa-lg" style="color:white;"></i></a>
+                <a href="#" class="menuCollapsed" style="display:none;" onclick="openNav()"><i class="fa fa-bars fa-lg" style="color:white;"></i></a>
+            </div>
+            <ul id="menu-content" class="menu-content collapse out">
+                <li data-toggle="collapse" data-target="#salesorder">
+                    <a href="#" class="menuExpanded"><i class="fa fa-tags fa-lg"></i> Sales Order <span class="arrow"></span></a>
+                    <a href="#" class="menuCollapsed" style="display:none;" title="Sales Order"><i class="fa fa-tags fa-lg"></i><span class="arrow"></span></a>
+                </li>
+                <ul class="sub-menu collapse" id="salesorder">
+                    <li>
+                        <a href="../Sales/Search" class="menuExpanded"><i class="fa fa-search fa-lg"></i> Search</a>
+                        <a href="../Sales/Search" class="menuCollapsed" style="display:none;" title="Search"><i class="fa fa-search fa-lg"></i></a>
+                    </li>
+                    <li>
+                        <a href="../Sales/Add" class="menuExpanded"><i class="fa fa-plus-square fa-lg"></i>Add</a>
+                        <a href="../Sales/Add" class="menuCollapsed" style="display:none;" title="Add"><i class="fa fa-plus-square fa-lg"></i></a>
+                    </li>
+                </ul>
+                <li data-toggle="collapse" data-target="#purchaseorder">
+                    <a href="#" class="menuExpanded"><i class="fa fa-cart-arrow-down fa-lg"></i> Purchase Order <span class="arrow"></span></a>
+                    <a href="#" class="menuCollapsed" style="display:none;" title="Purchase Order"><i class="fa fa-cart-arrow-down fa-lg"></i><span class="arrow"></span></a>
+                </li>
+                <ul class="sub-menu collapse" id="purchaseorder">
+                    <li>
+                        <a href="../Purchase/Search" class="menuExpanded"><i class="fa fa-search fa-lg"></i> Search</a>
+                        <a href="../Purchase/Search" class="menuCollapsed" style="display:none;" title="Search"><i class="fa fa-search fa-lg"></i></a>
+                    </li>
+                    @*<li>
+                        <a href="#" class="menuExpanded"><i class="fa fa-plus-square fa-lg"></i>Add</a>
+                        <a href="#" class="menuCollapsed" style="display:none;" title="Add"><i class="fa fa-plus-square fa-lg"></i></a>
+                    </li>*@
+                </ul>
+                <li data-toggle="collapse" data-target="#electionorder">
+                    <a href="#" class="menuExpanded"><i class="fa fa-check-square-o fa-lg"></i> Election Order <span class="arrow"></span></a>
+                    <a href="#" class="menuCollapsed" style="display:none;" title="Election Order"><i class="fa fa-check-square-o fa-lg"></i><span class="arrow"></span></a>
+                </li>
+                <ul class="sub-menu collapse" id="electionorder">
+                    <li>
+                        <a href="../Election/Search" class="menuExpanded"><i class="fa fa-search fa-lg"></i> Search</a>
+                        <a href="../Election/Search" class="menuCollapsed" style="display:none;" title="Search"><i class="fa fa-search fa-lg"></i></a>
+                    </li>
+                    @*<li>
+                        <a href="#" class="menuExpanded"><i class="fa fa-plus-square fa-lg"></i>Add</a>
+                        <a href="#" class="menuCollapsed" style="display:none;" title="Add"><i class="fa fa-plus-square fa-lg"></i></a>
+                    </li>*@
+                </ul>
+                <li>
+                    <a href="../Calendar/Index" class="menuExpanded">
+                        <i class="fa fa-calendar fa-lg"></i> Calendar
+                    </a>
+                    <a href="../Calendar/Index" class="menuCollapsed" style="display:none;" title="Calendar">
+                        <i class="fa fa-calendar fa-lg"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="../History/Index" class="menuExpanded">
+                        <i class="fa fa-history fa-lg"></i> History
+                    </a>
+                    <a href="../History/Index" class="menuCollapsed" style="display:none;" title="History">
+                        <i class="fa fa-history fa-lg"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="../Shipping/Daily" class="menuExpanded">
+                        <i class="fa fa-truck fa-lg"></i> Daily Shipping
+                    </a>
+                    <a href="../Shipping/Daily" class="menuCollapsed" style="display:none;" title="Daily Shipping">
+                        <i class="fa fa-truck fa-lg"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="../Home/Logout" class="menuExpanded">
+                        <i class="fa fa-sign-out fa-lg"></i> Logout
+                    </a>
+                    <a href="../Home/Logout" class="menuCollapsed" style="display:none;" title="Logout">
+                        <i class="fa fa-sign-out fa-lg"></i>
+                    </a>
+                </li>
+                @*<li data-toggle="collapse" data-target="#products">
+                <a href="#"><i class="fa fa-gift fa-lg"></i> UI Elements <span class="arrow"></span></a>
+            </li>
+            <ul class="sub-menu collapse" id="products">
+                <li class="active"><a href="#">CSS3 Animation</a></li>
+                <li><a href="#">General</a></li>
+                <li><a href="#">Buttons</a></li>
+                <li><a href="#">Tabs & Accordions</a></li>
+                <li><a href="#">Typography</a></li>
+                <li><a href="#">FontAwesome</a></li>
+                <li><a href="#">Slider</a></li>
+                <li><a href="#">Panels</a></li>
+                <li><a href="#">Widgets</a></li>
+                <li><a href="#">Bootstrap Model</a></li>
+            </ul>
+
+            <li data-toggle="collapse" data-target="#service" class="collapsed">
+                <a href="#"><i class="fa fa-globe fa-lg"></i> Services <span class="arrow"></span></a>
+            </li>
+            <ul class="sub-menu collapse" id="service">
+                <li>New Service 1</li>
+                <li>New Service 2</li>
+                <li>New Service 3</li>
+            </ul>
+
+            <li data-toggle="collapse" data-target="#new" class="collapsed">
+                <a href="#"><i class="fa fa-car fa-lg"></i> New <span class="arrow"></span></a>
+            </li>
+            <ul class="sub-menu collapse" id="new">
+                <li>New New 1</li>
+                <li>New New 2</li>
+                <li>New New 3</li>
+            </ul>
+
+            <li>
+                <a href="#">
+                    <i class="fa fa-user fa-lg"></i> Profile
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fa fa-users fa-lg"></i> Users
+                </a>
+            </li>*@
+            </ul>
+
+            <br />
+
+
+        </div>
+    </div>
+
+    <div class="body-content" id="main">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Sales Order</p>
+        </footer>
+    </div>
+
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

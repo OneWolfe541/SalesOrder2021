@@ -1,0 +1,344 @@
+﻿@model List<SalesOrder2021.Models.ShippingOrderDetails>
+
+@{
+    ViewBag.Title = "Shipping Order";
+}
+
+<style>
+    .table_header {
+        border: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_subheader {
+        border-bottom: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_content {
+        border: 1px solid black;
+        text-align: center;
+        vertical-align: top;
+        padding: 5px;
+    }
+
+    .table_content_large {
+        border: 1px solid black;
+        text-align: center;
+        font-size: 24px;
+        padding: 10px;
+    }
+
+    .row_separator {
+        border: 2px solid black;
+    }
+</style>
+
+<br />
+
+@if (Model != null)
+{
+
+    foreach (var item in Model)
+    {
+        <div>
+            @Html.ActionLink("Sales Order", "Order", "Sales", new { so = item.SalesOrderNo }, new { @class = "btn btn-primary link_small" })
+
+            @Html.ActionLink("Purchase Order", "Order", "Purchase", new { so = item.SalesOrderNo }, new { @class = "btn btn-primary link_small" })
+
+            @Html.ActionLink("Shipping Order", "Order", "Shipping", new { so = item.SalesOrderNo }, new { @class = "btn btn-primary link_small" })
+
+            @Html.ActionLink("Election Order", "Order", "Election", new { so = item.SalesOrderNo }, new { @class = "btn btn-primary link_small" })
+        </div>
+
+        <br />
+
+        <h2 style="text-align:center;">Shipping Order</h2>
+
+        <div class="form-horizontal">
+            <div class="row">
+                <div class="col-lg-5 col-md-7">
+                    <img src='@Url.Content("~/Images/AESslug.png")' width="460" />
+                </div>
+
+                <div class="col-md-5">
+                    <table style="width:100%;">
+                        <tr>
+                            <td class="table_header" style="text-align:center; border:1px solid black;">
+                                Sales Order No
+                            </td>
+
+                            <td class="table_header" style="text-align:center; border:1px solid black;">
+                                Bill Of Lading No
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="border:1px solid black;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.SalesOrderNo, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="table_content" style="border:1px solid black;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.LadingID, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="text-align:center;">
+                                UPS Tracking:
+                                @Html.DisplayFor(modelItem => item.UpsTracking, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-10 col-md-12">
+                    <table style="width:100%;">
+                        <tr>
+                            <td class="table_header" style="text-align:center; border:0px solid transparent;">
+                                @Html.DisplayFor(modelItem => item.LadingTitle1, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_header" style="text-align:center; border:0px solid transparent;">
+                                @Html.DisplayFor(modelItem => item.LadingTitle2, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-5 col-md-7">
+                    <table style="border:1px solid black; width:100%;">
+                        <tr>
+                            <td class="table_header" style="text-align:center;">
+                                Ship To
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.ShipToName, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.ShipToAddress1, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.ShipToAddress2, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.ShipToCity, new { htmlAttributes = new { @class = "form-control" } })
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.ShipToState, new { htmlAttributes = new { @class = "form-control" } })
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.ShipToZip, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left;">
+                                &nbsp;
+                                Attn:
+                                @Html.DisplayFor(modelItem => item.ShipToContactName, new { htmlAttributes = new { @class = "form-control" } })
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.ShipToContactTitle, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.ShipToPhone, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                </div>
+                <div class="col-md-5">
+                    <table style="border:1px solid black; width:100%;">
+                        <tr>
+                            <td class="table_header" style="text-align:center;">
+                                Ship Date
+                            </td>
+                            <td class="table_header" style="text-align:center;" colspan="2">
+                                Shipped Via
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:center;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.EntryDate, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="table_content" style="text-align:center;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.ShipperName, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="table_content" style="text-align:center;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.ShippingMethod, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_header" style="text-align:center;" colspan="3">
+                                Special Instructions
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:center;" colspan="3">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.Instructions, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_header" style="text-align:center;">
+                                Total Cartons
+                            </td>
+                            <td class="table_header" style="text-align:center;" colspan="2">
+                                Complete Shipment
+                                <label><input type="checkbox" value="" checked="@item.CompleteShipment" /></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:center;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.TotalCartons, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="table_header" style="text-align:center;" colspan="2">
+                                Partial Shipment
+                                <label><input type="checkbox" value="" checked="@item.PartialShipment" /></label>
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-10 col-md-12">
+                    <table style="border:1px solid black; width:100%;">
+                        <tr>
+                            <td class="table_header" style="text-align:center;">
+                                Freight
+                            </td>
+                            <td rowspan="2">
+                                &nbsp;
+                                <label><input type="checkbox" value="" checked="@item.NumberedForm" /></label>
+                            </td>
+                            <td class="table_header" style="text-align:center;" rowspan="2">
+                                Numbered Form
+                            </td>
+                            <td class="table_header" style="text-align:center;">
+                                From
+                            </td>
+                            <td class="table_header" style="text-align:center;">
+                                To
+                            </td>
+                            <td class="table_header" style="text-align:center;">
+                                Listed Numbers Destroyed In Production * See Below
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:center;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.Freight, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="table_content" style="text-align:center;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.NoFrom, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="table_content" style="text-align:center;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.NoTo, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="table_content" style="text-align:center;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.Destroyed, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-10 col-md-12">
+                    <table class="table">
+                        <tr>
+                            <th>
+                                Quantity Ordered
+                            </th>
+                            <th>
+                                Quantity Shipped
+                            </th>
+                            <th>
+                                Description
+                            </th>
+                            <th>
+                                Start No
+                            </th>
+                            <th>
+                                End No
+                            </th>
+                            <th>
+                                Status
+                            </th>
+                        </tr>
+                        @foreach (var subitem in item.ShippingOrderItems)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => subitem.QtyOrdered)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => subitem.QtyShipped)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => subitem.Description)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => subitem.StartNumber)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => subitem.EndNumber)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => subitem.Status)
+                                </td>
+                            </tr>
+                        }
+
+                    </table>
+                </div>
+            </div>
+
+        </div>
+        <br />
+    }
+}
+else
+{
+    < div >
+    @Html.ActionLink("Sales Order", "Order", "Sales", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+    @Html.ActionLink("Purchase Order", "Order", "Purchase", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+    @Html.ActionLink("Shipping Order", "Order", "Shipping", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+    @Html.ActionLink("Election Order", "Order", "Election", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+    </ div >
+
+    < h2 style = "text-align:center;" > Shipping Order </ h2 >
+}

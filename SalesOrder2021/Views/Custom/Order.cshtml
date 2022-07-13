@@ -1,0 +1,334 @@
+﻿@model List<SalesOrder2021.Models.CustomOrderDetails>
+
+@{
+    ViewBag.Title = "Custom Order";
+}
+
+<style>
+    .table_header {
+        border: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_subheader {
+        border-bottom: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_content {
+        border: 1px solid black;
+        text-align: center;
+        vertical-align: top;
+        padding: 5px;
+    }
+
+    .table_content_large {
+        border: 1px solid black;
+        text-align: center;
+        font-size: 24px;
+        padding: 10px;
+    }
+
+    .row_separator {
+        border: 2px solid black;
+    }
+</style>
+
+<br />
+
+@if (Model != null)
+{
+    <div>
+        @Html.ActionLink("Sales Order", "Order", "Sales", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Election Order", "Order", "Election", new { eo = ViewBag.ElectionOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Ballot Order", "Order", "Ballot", new { eo = ViewBag.ElectionOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Supply Order", "Order", "Supply", new { eo = ViewBag.ElectionOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Custom Order", "Order", "Custom", new { eo = ViewBag.ElectionOrder }, new { @class = "btn btn-primary link_small" })
+    </div>
+
+    <br />
+
+    <div>
+        @Html.ActionLink("Add Custom Order", "Create", "Custom", new { eo = ViewBag.ElectionOrder }, new { @class = "link_small" })
+    </div>
+
+    var i = 0;
+    foreach (var item in Model)
+    {
+        { i++; }
+        <br />
+        <div class="col-lg-10 col-md-12">
+            @Html.HiddenFor(modelItem => item.CustomOrderID, new { id = string.Format("item_CustomOrderID_{0}", i) })
+            <h2 style="text-align:center;">@item.GovType Custom Order @item.CustomOrderID</h2>
+            @if (item.ElectionDate >= DateTime.Now.Date)
+            {
+                <p style="text-align:center; margin-top:-10px;">
+                    <a id="btnAdd" href="#" style="font-size:16px; text-align:center;" onclick="EditCustomOrder(@i)">Edit</a>
+                </p>
+            }
+            else
+            {
+                <p>&nbsp;</p>
+            }
+        </div>
+
+        <div class="form-horizontal">
+            <div class="row">
+                <div class="col-lg-5 col-md-7" style="min-width:500px;">
+                    <img src='@Url.Content("~/Images/AESslug.png")' width="460" />
+                </div>
+
+                <div class="col-md-5">
+                    <table style="width:100%;">
+                        <tr>
+                            <td class="table_header" style="text-align:right; border:0px solid transparent;">
+                                Custom Order No
+                            </td>
+                            <td class="table_content" style="border:1px solid black;">
+                                &nbsp;
+                                @Html.DisplayFor(model => item.CustomOrderID, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_header" style="text-align:right; border:0px solid transparent;">
+                                Date of Entry
+                            </td>
+                            <td class="table_content" style="border:1px solid black;">
+                                &nbsp;
+                                @Html.DisplayFor(model => item.EntryDate, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-10 col-md-12">
+                    <table style="width:100%;">
+                        <tr>
+                            <td class="table_header" style="text-align:left; border:0px solid transparent; width:75%;">
+                                Election Title
+                            </td>
+                            <td class="table_header" style="text-align:left; border:0px solid transparent;">
+                                Election Date
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left; border:1px solid black; width:75%;">
+                                &nbsp;
+                                @Html.DisplayFor(model => item.ElectionTitle, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="table_content" style="text-align:left; border:1px solid black;">
+                                &nbsp;
+                                @Html.DisplayFor(model => item.ElectionDate, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-5 col-md-7">
+                    <table style="width:100%;">
+                        <tr>
+                            <td class="table_header">
+                                Custom Supply
+                            </td>
+                            <td class="table_header">
+                                Completion Date
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left;">
+                                &nbsp;
+                                @Html.DisplayFor(model => item.CustomSupply, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="table_content" style="text-align:left;">
+                                &nbsp;
+                                @Html.DisplayFor(model => item.DueDate, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                </div>
+                <div class="col-md-5">
+                    <table style="width:100%;">
+                        <tr>
+                            <td class="table_header">
+                                Customer Name
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left;">
+                                &nbsp;
+                                @Html.DisplayFor(model => item.CustomerName, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-10 col-md-12">
+                    <table style="width:100%;">
+                        <tr>
+                            <td class="table_header" style="text-align:left; border:1px solid black;" colspan="2">
+                                Instructions
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left; border:1px solid black;" colspan="2">
+                                &nbsp;
+                                @Html.DisplayFor(model => item.COInstructions, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-10 col-md-12">
+                    @foreach (var subitem in item.CustomItems)
+                    {
+                        <hr class="row_separator" />
+                        <table style="width:100%;">
+                            <tr>
+                                <td class="table_header" style="text-align:left; border:1px solid black;">
+                                    Custom Item
+                                </td>
+                                <td class="table_header" style="text-align:left; border:1px solid black;">
+                                    Quantity
+                                </td>
+                                <td class="table_header" style="text-align:left; border:1px solid black;">
+                                    Size
+                                </td>
+                                <td class="table_header" style="text-align:left; border:1px solid black;">
+                                    Sides
+                                </td>
+                                <td class="table_header" style="text-align:left; border:1px solid black;">
+                                    NCR Parts
+                                </td>
+                                <td class="table_header" style="text-align:left; border:1px solid black;">
+                                    Ink Colors
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="table_content" style="text-align:left; border:1px solid black;">
+                                    &nbsp;
+                                    @Html.DisplayFor(modelItem => subitem.CustomItem, new { htmlAttributes = new { @class = "form-control" } })
+                                </td>
+                                <td class="table_content" style="text-align:left; border:1px solid black;">
+                                    &nbsp;
+                                    @Html.DisplayFor(modelItem => subitem.Quantity, new { htmlAttributes = new { @class = "form-control" } })
+                                </td>
+                                <td class="table_content" style="text-align:left; border:1px solid black;">
+                                    &nbsp;
+                                    @Html.DisplayFor(modelItem => subitem.pSize, new { htmlAttributes = new { @class = "form-control" } })
+                                </td>
+                                <td class="table_content" style="text-align:left; border:1px solid black;">
+                                    &nbsp;
+                                    @Html.DisplayFor(modelItem => subitem.Sides, new { htmlAttributes = new { @class = "form-control" } })
+                                </td>
+                                <td class="table_content" style="text-align:left; border:1px solid black;">
+                                    &nbsp;
+                                    @Html.DisplayFor(modelItem => subitem.Parts, new { htmlAttributes = new { @class = "form-control" } })
+                                </td>
+                                <td class="table_content" style="text-align:left; border:1px solid black;">
+                                    &nbsp;
+                                    @Html.DisplayFor(modelItem => subitem.Colors, new { htmlAttributes = new { @class = "form-control" } })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    &nbsp;
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="table_header" style="text-align:left; border:0px solid transparent;" colspan="2">
+                                    Windows
+                                </td>
+                                <td class="table_header" style="text-align:left; border:1px solid black; width:10%;">
+                                    <label><input type="checkbox" value="" checked="@subitem.Permit" /></label>
+                                    Permit
+                                </td>
+                                <td class="table_header" style="text-align:left; border:1px solid black; width:15%;">
+                                    <label><input type="checkbox" value="" checked="@subitem.AESIndicia" /></label>
+                                    AES Indicia
+                                </td>
+                                <td class="table_header" style="text-align:left; border:1px solid black; width:15%;">
+                                    <label><input type="checkbox" value="" checked="@subitem.Courtesy" /></label>
+                                    Courtesy Reply
+                                </td>
+                                <td class="table_header" style="text-align:left; border:1px solid black; width:15%;">
+                                    <label><input type="checkbox" value="" checked="@subitem.TickMarks" /></label>
+                                    Tick Marks
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="table_content" style="text-align:left; border:1px solid black;" colspan="2">
+                                    &nbsp;
+                                    @Html.DisplayFor(modelItem => subitem.Colors, new { htmlAttributes = new { @class = "form-control" } })
+                                </td>
+                                <td class="table_header" style="text-align:left; border:1px solid black;">
+                                    <label><input type="checkbox" value="" checked="@subitem.Metered" /></label>
+                                    Metered
+                                </td>
+                                <td class="table_header" style="text-align:left; border:1px solid black;">
+                                    <label><input type="checkbox" value="" checked="@subitem.QBRM" /></label>
+                                    QBRM and Test
+                                </td>
+                                <td class="table_header" style="text-align:left; border:1px solid black;">
+                                    <label><input type="checkbox" value="" checked="@subitem.Graphics" /></label>
+                                    Logo/Graphics
+                                </td>
+                                <td class="table_header" style="text-align:left; border:1px solid black;">
+                                    <label><input type="checkbox" value="" checked="@subitem.DrillMarks" /></label>
+                                    Drill Marks
+                                </td>
+                            </tr>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div>
+        @Html.ActionLink("Election Order", "Order", "Election", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Ballot Order", "Order", "Ballot", new { eo = ViewBag.ElectionOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Supply Order", "Order", "Supply", new { eo = ViewBag.ElectionOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Custom Order", "Order", "Custom", new { eo = ViewBag.ElectionOrder }, new { @class = "btn btn-primary link_small" })
+    </div>
+
+    <br />
+
+    <div>
+        @Html.ActionLink("Add Custom Order", "Create", "Custom", new { eo = ViewBag.ElectionOrder }, new { @class = "link_small" })
+    </div>
+
+    <h2 style="text-align:center;">Custom Order</h2>
+}
+
+@section scripts{
+    <script type="text/javascript">
+        var EditCustomOrder = function (id) {
+            console.log($("#item_CustomOrderID_" + id).val());
+            window.location.replace("../Custom/Edit?co=" + $("#item_CustomOrderID_" + id).val());
+        };
+    </script>
+}

@@ -1,0 +1,1347 @@
+﻿@model SalesOrder2021.Models.PurchaseOrderDetails
+
+@{
+    ViewBag.Title = "Purchase Order";
+}
+
+<style>
+    .table_header {
+        border: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_subheader {
+        border-bottom: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_content {
+        border: 1px solid black;
+        text-align: center;
+        vertical-align: top;
+        padding: 5px;
+    }
+
+    .table_content_large {
+        border: 1px solid black;
+        text-align: center;
+        font-size: 24px;
+        padding: 10px;
+    }
+
+    .row_separator {
+        border: 2px solid black;
+    }
+
+    .dropdown {
+        width: 100%;
+    }
+</style>
+
+@if (Model != null)
+{
+    <h2>Purchase Order Edit: @Html.DisplayFor(Model => Model.PONumber)</h2>
+
+    <div class="form-horizontal">
+        @using (Html.BeginForm("UpdatePurchaseOrder", "Purchase", FormMethod.Post, new { id = "PurchaseOrderForm" }))
+        {
+            @Html.HiddenFor(model => model.PONumber)
+            <div class="row">
+                <div class="col-md-3">
+                    Purchase Order Type
+
+                    @if ((Model.PurchaseOrderItems == null || Model.PurchaseOrderItems.Count() == 0) && (Model.SupplyItems == null || Model.SupplyItems.Count() == 0))
+                    {
+                        @Html.DropDownListFor(model => model.POType, (IEnumerable<SelectListItem>)ViewBag.POTypeList, null, new { @class = "form-control", @onchange = "UpdatePurchaseOrderType()" })
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(model => model.POType)
+                        @*@Html.DropDownListFor(model => model.POType, (IEnumerable<SelectListItem>)ViewBag.POTypeList, null, new { @class = "form-control", @onchange = "UpdatePurchaseOrder()" })*@
+                        @Html.DropDownListFor(model => model.POType, (IEnumerable<SelectListItem>)ViewBag.POTypeList, null, new { @class = "form-control", @onchange = "UpdatePurchaseOrderType()", disabled = "disabled" })
+                    }
+                </div>
+                <div class="col-md-3">
+                    Entered By
+                    @Html.DropDownListFor(model => model.AESContactID, (IEnumerable<SelectListItem>)ViewBag.EmployeeList, null, new { @class = "form-control", @onchange = "UpdatePurchaseOrder()", disabled = "disabled" })
+                </div>
+                <div class="col-md-3">
+                    Purchase Order Status
+                    @Html.DropDownListFor(model => model.POStatus, (IEnumerable<SelectListItem>)ViewBag.POStatusList, null, new { @class = "form-control", @onchange = "UpdatePurchaseOrder()" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    Quote Number
+                    @Html.EditorFor(model => model.QuoteNo, new { htmlAttributes = new { @class = "form-control", onblur = "UpdatePurchaseOrder()" } })
+                </div>
+                <div class="col-md-3">
+                    Quote Amount
+                    @Html.EditorFor(model => model.QuoteAmount, new { htmlAttributes = new { @class = "form-control", onblur = "UpdatePurchaseOrder()" } })
+                </div>
+                <div class="col-md-3">
+                    Account Code
+                    @Html.DropDownListFor(model => model.AccountCode, (IEnumerable<SelectListItem>)ViewBag.AccountingList, null, new { @class = "form-control", @onchange = "UpdateAccountDetails()" })
+                </div>
+                <div class="col-md-3">
+                    Account Description
+                    @Html.EditorFor(model => model.AccountDescription, new { htmlAttributes = new { @class = "form-control", onblur = "UpdatePurchaseOrder()", disabled = "disabled" } })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    Date Of Order
+                    @Html.EditorFor(model => model.OrderDate, new { htmlAttributes = new { @class = "form-control datepicker", onblur = "UpdatePurchaseOrder()" } })
+                </div>
+                <div class="col-md-3">
+                    Shipping Date
+                    @Html.EditorFor(model => model.ReqShipDate, new { htmlAttributes = new { @class = "form-control datepicker", onblur = "UpdatePurchaseOrder()" } })
+                </div>
+                <div class="col-md-3">
+                    Ship Via
+                    @Html.DropDownListFor(model => model.ShipperID, (IEnumerable<SelectListItem>)ViewBag.ShipperList, null, new { @class = "form-control", @onchange = "UpdateShippingMethodsList()" })
+                </div>
+                <div class="col-md-3">
+                    Shipping Method
+                    @Html.DropDownListFor(model => model.ShippingMethod, (IEnumerable<SelectListItem>)ViewBag.ShippingMethodList, null, new { @class = "form-control", @onchange = "UpdatePurchaseOrder()" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    Order Status
+                    @Html.DropDownListFor(model => model.OrderStatus, (IEnumerable<SelectListItem>)ViewBag.OrderStatusList, " ", new { @class = "form-control", @onchange = "UpdatePurchaseOrder()" })
+                </div>
+                <div class="col-md-3">
+                    Composition
+                    @Html.DropDownListFor(model => model.Composition, (IEnumerable<SelectListItem>)ViewBag.CompositionList, " ", new { @class = "form-control", @onchange = "UpdatePurchaseOrder()" })
+                </div>
+                <div class="col-md-3">
+                    Previous Job Number
+                    @Html.EditorFor(model => model.PrevJobNo, new { htmlAttributes = new { @class = "form-control", onblur = "UpdatePurchaseOrder()" } })
+                </div>
+                <div class="col-md-3">
+                    Previous Job Date
+                    @Html.EditorFor(model => model.PrevDate, new { htmlAttributes = new { @class = "form-control datepicker", onblur = "UpdatePurchaseOrder()" } })
+                </div>
+            </div>
+
+            <hr />
+
+            <b>Vendor</b>
+            <div class="row">
+                <div class="col-md-3">
+                    Name
+                    @Html.DropDownListFor(model => model.VendorNo, (IEnumerable<SelectListItem>)ViewBag.VendorList, null, new { @class = "form-control", @onchange = "UpdateVendorDetails()" })
+                </div>
+                <div class="col-md-3">
+                    Address 1
+                    @Html.EditorFor(model => model.VendorAddress1, new { htmlAttributes = new { @class = "form-control", onblur = "UpdatePurchaseOrder()", disabled = "disabled" } })
+                </div>
+                <div class="col-md-3">
+                    Address 2
+                    @Html.EditorFor(model => model.VendorAddress2, new { htmlAttributes = new { @class = "form-control", onblur = "UpdatePurchaseOrder()", disabled = "disabled" } })
+                </div>
+                <div class="col-md-3">
+                    Phone
+                    @Html.EditorFor(model => model.VendorPhone, new { htmlAttributes = new { @class = "form-control", onblur = "UpdatePurchaseOrder()", disabled = "disabled" } })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    City
+                    @Html.EditorFor(model => model.VendorCity, new { htmlAttributes = new { @class = "form-control", onblur = "UpdatePurchaseOrder()", disabled = "disabled" } })
+                </div>
+                <div class="col-md-3">
+                    State
+                    @Html.EditorFor(model => model.VendorState, new { htmlAttributes = new { @class = "form-control", onblur = "UpdatePurchaseOrder()", disabled = "disabled" } })
+                </div>
+                <div class="col-md-3">
+                    Zip
+                    @Html.EditorFor(model => model.VendorZip, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateSalesOrder()", disabled = "disabled" } })
+                </div>
+            </div>
+
+            <hr />
+
+            <b>Ship To</b>
+            <div class="row">
+                <div class="col-md-6">
+                    Name
+                    @Html.DropDownListFor(model => model.CustomerID, (IEnumerable<SelectListItem>)ViewBag.CustomerList, null, new { @class = "form-control dropdown", @onchange = "UpdateShipToAddress()", style = "max-width:620px;" })
+                </div>
+                <div class="col-md-6">
+                    For Customer
+                    @Html.EditorFor(model => model.ForCustomer, new { htmlAttributes = new { @class = "form-control", onblur = "UpdatePurchaseOrder()", disabled = "disabled", style = "width:100%; max-width:620px;" } })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    Address 1
+                    @Html.DropDownListFor(model => model.CustomerAddressID, (IEnumerable<SelectListItem>)ViewBag.CustomerAddressList, null, new { @class = "form-control", @onchange = "UpdateAddressDetails()" })
+                    @Html.HiddenFor(model => model.CustomerAddress1, new { htmlAttributes = new { @class = "form-control", onblur = "UpdatePurchaseOrder()", disabled = "disabled" } })
+                </div>
+                <div class="col-md-3">
+                    Address 2
+                    @Html.EditorFor(model => model.CustomerAddress2, new { htmlAttributes = new { @class = "form-control", onblur = "UpdatePurchaseOrder()", disabled = "disabled" } })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    City
+                    @Html.EditorFor(model => model.CustomerCity, new { htmlAttributes = new { @class = "form-control", onblur = "UpdatePurchaseOrder()", disabled = "disabled" } })
+                </div>
+                <div class="col-md-3">
+                    State
+                    @Html.EditorFor(model => model.CustomerState, new { htmlAttributes = new { @class = "form-control", onblur = "UpdatePurchaseOrder()", disabled = "disabled" } })
+                </div>
+                <div class="col-md-3">
+                    Zip
+                    @Html.EditorFor(model => model.CustomerZip, new { htmlAttributes = new { @class = "form-control", onblur = "UpdatePurchaseOrder()", disabled = "disabled" } })
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="row">
+                <div class="col-md-9">
+                    Special Instructions
+                    @Html.EditorFor(model => model.SpecInst, new { htmlAttributes = new { @class = "form-control", onblur = "UpdatePurchaseOrder()", style = "max-width:1000px;" } })
+                </div>
+                <div class="col-md-3">
+                    Pressrun Instructions
+                    @Html.EditorFor(model => model.QtyInst, new { htmlAttributes = new { @class = "form-control", onblur = "UpdatePurchaseOrder()" } })
+                </div>
+            </div>
+
+            <hr />
+
+            <div id="Purchase_Item_1" style="display:none;">
+                Flatsheet/Envelope Items<br />
+                @if (Model.PurchaseOrderItems != null && Model.PurchaseOrderItems.Count > 0)
+                {
+                    <div class="row">
+                        <div class="col-lg-10 col-md-12">
+                            <table class="table">
+                                <tr>
+                                    <th>
+                                        Item No
+                                    </th>
+                                    <th>
+                                        Ordered
+                                    </th>
+                                    <th>
+                                        Description
+                                    </th>
+                                    <th>
+                                        Unit Cost
+                                    </th>
+                                    <th>
+                                        Per
+                                    </th>
+                                    <th>
+                                        Extension
+                                    </th>
+                                </tr>
+                                @foreach (var subitem in Model.PurchaseOrderItems)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.HiddenFor(modelItem => subitem.PODetailID)
+                                            @Html.HiddenFor(modelItem => subitem.PONumber, new { id = string.Format("item_PONumber_{0}", subitem.PODetailID) })
+                                            @Html.EditorFor(modelItem => subitem.ItemNo, new { htmlAttributes = new { id = string.Format("item_ItemNo_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateEnvelopeItem({0})", subitem.PODetailID) } })
+                                        </td>
+                                        <td>
+                                            @Html.EditorFor(modelItem => subitem.Quantity, new { htmlAttributes = new { id = string.Format("item_Quantity_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateEnvelopeItem({0})", subitem.PODetailID) } })
+                                        </td>
+                                        <td>
+                                            @Html.EditorFor(modelItem => subitem.ItemDescription, new { htmlAttributes = new { id = string.Format("item_Description_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateEnvelopeItem({0})", subitem.PODetailID) } })
+                                        </td>
+                                        <td>
+                                            @Html.EditorFor(modelItem => subitem.UnitCost, new { htmlAttributes = new { id = string.Format("item_UnitCost_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateEnvelopeItem({0})", subitem.PODetailID) } })
+                                        </td>
+                                        <td>
+                                            @Html.DropDownListFor(modelItem => subitem.PricePerUnit, new SelectList(ViewBag.PricingList2, "Value", "Text", subitem.PricePerUnit), null, new { @class = "form-control", id = string.Format("item_PricePerUnit_{0}", subitem.PODetailID), @onchange = string.Format("UpdateEnvelopeItem({0})", subitem.PODetailID) })
+                                            @*@Html.EditorFor(modelItem => subitem.PricePerUnit, new { htmlAttributes = new { id = string.Format("item_PricePerUnit_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateMiscellaneousItem({0})", subitem.PODetailID) } })*@
+                                        </td>
+                                        <td>
+                                            @Html.EditorFor(modelItem => subitem.Extensionq, new { htmlAttributes = new { id = string.Format("item_Extensionq_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateEnvelopeItem({0})", subitem.PODetailID) } })
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            &nbsp;
+                                        </td>
+                                        <td colspan="5">
+                                            <table style="width:100%;">
+                                                <tr>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;" colspan="4">
+                                                        Paper
+                                                    </td>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;" colspan="4">
+                                                        Ink
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        Wt.
+                                                    </td>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        Color
+                                                    </td>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        Grade
+                                                    </td>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        Size
+                                                    </td>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        1st
+                                                    </td>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        2nd
+                                                    </td>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        3rd
+                                                    </td>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        4th
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        @Html.EditorFor(modelItem => subitem.StockWeight, new { htmlAttributes = new { id = string.Format("item_StockWeight_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateEnvelopeItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        @Html.EditorFor(modelItem => subitem.StockColor, new { htmlAttributes = new { id = string.Format("item_StockColor_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateEnvelopeItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        @Html.EditorFor(modelItem => subitem.StockGrade, new { htmlAttributes = new { id = string.Format("item_StockGrade_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateEnvelopeItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        @Html.EditorFor(modelItem => subitem.StockSize, new { htmlAttributes = new { id = string.Format("item_StockSize_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateEnvelopeItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        @Html.EditorFor(modelItem => subitem.Ink1st, new { htmlAttributes = new { id = string.Format("item_Ink1st_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateEnvelopeItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        @Html.EditorFor(modelItem => subitem.Ink2nd, new { htmlAttributes = new { id = string.Format("item_Ink2nd_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateEnvelopeItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        @Html.EditorFor(modelItem => subitem.Ink3rd, new { htmlAttributes = new { id = string.Format("item_Ink3rd_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateEnvelopeItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        @Html.EditorFor(modelItem => subitem.Ink4th, new { htmlAttributes = new { id = string.Format("item_Ink4th_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateEnvelopeItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:0px solid transparent;"></td>
+                                        <td style="border:0px solid transparent;" colspan="5">
+                                            <table style="width:100%;">
+                                                <tr>
+                                                    <td class="table_header" style="border:0px solid transparent;">
+                                                        Rec All
+                                                    </td>
+                                                    <td class="table_header" style="border:0px solid transparent;">
+                                                        Rec Partial
+                                                    </td>
+                                                    <td class="table_header" style="border:0px solid transparent;">
+                                                        Date/Time
+                                                    </td>
+                                                    <td class="table_header" style="border:0px solid transparent;">
+                                                        Qty Rec
+                                                    </td>
+                                                    <td class="table_header" style="border:0px solid transparent;">
+                                                        Checked By
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="border:0px solid transparent;">
+                                                        <label><input type="checkbox" value="" checked="@subitem.Received" onchange=@string.Format("UpdateEnvelopeItem({0})", subitem.PODetailID) id=@string.Format("item_Received_{0}", subitem.PODetailID) /></label>
+                                                    </td>
+                                                    <td style="border:0px solid transparent;">
+                                                        <label><input type="checkbox" value="" checked="@subitem.PartialReceived" onchange=@string.Format("UpdateEnvelopeItem({0})", subitem.PODetailID) id=@string.Format("item_PartialReceived_{0}", subitem.PODetailID) /></label>
+                                                    </td>
+                                                    <td style="border:0px solid transparent;">
+                                                        @Html.EditorFor(modelItem => subitem.DateReceived, new { htmlAttributes = new { id = string.Format("item_DateReceived_{0}", subitem.PODetailID), @class = "form-control datepicker", onblur = string.Format("UpdateEnvelopeItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                    <td style="border:0px solid transparent;">
+                                                        @Html.EditorFor(modelItem => subitem.QtyReceived, new { htmlAttributes = new { id = string.Format("item_QtyReceived_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateEnvelopeItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                    <td style="border:0px solid transparent;">
+                                                        @Html.DropDownListFor(modelItem => subitem.ReceivedBy, new SelectList(ViewBag.ReceivedList, "Value", "Text", subitem.ReceivedBy), null, new { id = string.Format("item_ReceivedBy_{0}", subitem.PODetailID), @class = "form-control", @onchange = string.Format("UpdateEnvelopeItem({0})", subitem.PODetailID) })
+                                                        @*@Html.EditorFor(modelItem => subitem.CheckedBy, new { htmlAttributes = new { id = string.Format("item_CheckedBy_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateMiscellaneousItem({0})", subitem.PODetailID) } })*@
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                    </div>
+                }
+                @Html.ActionLink("Add Flatsheet/Envelope Item", "AddItem", "Purchase", new { po = Model.PONumber }, new { @class = "btn btn-primary link_small" })
+            </div>
+            <div id="Purchase_Item_2" style="display:none;">
+                Continuous Items<br />
+                @if (Model.PurchaseOrderItems != null && Model.PurchaseOrderItems.Count() > 0)
+                {
+                    <div class="row">
+                        <div class="col-lg-10 col-md-12">
+                            <table class="table">
+                                <tr>
+                                    <th>
+                                        Item No
+                                    </th>
+                                    <th>
+                                        Ordered
+                                    </th>
+                                    <th>
+                                        Description
+                                    </th>
+                                    <th>
+                                        Unit Cost
+                                    </th>
+                                    <th>
+                                        Per
+                                    </th>
+                                    <th>
+                                        Extension
+                                    </th>
+                                </tr>
+                                @foreach (var subitem in Model.PurchaseOrderItems)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.HiddenFor(modelItem => subitem.PODetailID)
+                                            @Html.HiddenFor(modelItem => subitem.PONumber, new { id = string.Format("item_PONumber_{0}", subitem.PODetailID) })
+                                            @Html.EditorFor(modelItem => subitem.ItemNo, new { htmlAttributes = new { id = string.Format("item_ItemNo_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateContinuousItem({0})", subitem.PODetailID) } })
+                                        </td>
+                                        <td>
+                                            @Html.EditorFor(modelItem => subitem.Quantity, new { htmlAttributes = new { id = string.Format("item_Quantity_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateContinuousItem({0})", subitem.PODetailID) } })
+                                        </td>
+                                        <td>
+                                            @Html.EditorFor(modelItem => subitem.ItemDescription, new { htmlAttributes = new { id = string.Format("item_Description_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateContinuousItem({0})", subitem.PODetailID) } })
+                                        </td>
+                                        <td>
+                                            @Html.EditorFor(modelItem => subitem.UnitCost, new { htmlAttributes = new { id = string.Format("item_UnitCost_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateContinuousItem({0})", subitem.PODetailID) } })
+                                        </td>
+                                        <td>
+                                            @Html.DropDownListFor(modelItem => subitem.PricePerUnit, new SelectList(ViewBag.PricingList2, "Value", "Text", subitem.PricePerUnit), null, new { @class = "form-control", id = string.Format("item_PricePerUnit_{0}", subitem.PODetailID), @onchange = string.Format("UpdateContinuousItem({0})", subitem.PODetailID) })
+                                        </td>
+                                        <td>
+                                            @Html.EditorFor(modelItem => subitem.Extensionq, new { htmlAttributes = new { id = string.Format("item_Extensionq_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateContinuousItem({0})", subitem.PODetailID) } })
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            &nbsp;
+                                        </td>
+                                        <td colspan="5">
+                                            <table style="width:100%;">
+                                                <tr>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        Numbering
+                                                    </td>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;" colspan="2">
+                                                        Starting Number
+                                                    </td>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        Color
+                                                    </td>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        Number Style
+                                                    </td>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        Guarnateed No Missing
+                                                    </td>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        MICR
+                                                    </td>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        Construction
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        <label><input type="checkbox" value="" checked="@subitem.Numbering" onchange=@string.Format("UpdateContinuousItem({0})", subitem.PODetailID) id=@string.Format("item_Numbering_{0}", subitem.PODetailID) /></label>
+                                                    </td>
+                                                    <td style="text-align:center; border:0px solid black;" colspan="2">
+                                                        @Html.EditorFor(modelItem => subitem.StartNumber, new { htmlAttributes = new { id = string.Format("item_StartNumber_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateContinuousItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        @Html.EditorFor(modelItem => subitem.NumberColor, new { htmlAttributes = new { id = string.Format("item_NumberColor_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateContinuousItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        @Html.DropDownListFor(modelItem => subitem.NumberStyle, new SelectList(ViewBag.NumberStyleList, "Value", "Text", subitem.NumberStyle), "", new { id = string.Format("item_NumberStyle_{0}", subitem.PODetailID), @class = "form-control", @onchange = string.Format("UpdateSupplyItem({0})", subitem.PODetailID) })
+                                                    </td>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        <label><input type="checkbox" value="" checked="@subitem.NoMissing" onchange=@string.Format("UpdateContinuousItem({0})", subitem.PODetailID) id=@string.Format("item_NoMissing_{0}", subitem.PODetailID) /></label>
+                                                    </td>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        @Html.DropDownListFor(modelItem => subitem.MICR, new SelectList(ViewBag.MICRList, "Value", "Text", subitem.MICR), "", new { id = string.Format("item_MICR_{0}", subitem.PODetailID), @class = "form-control", @onchange = string.Format("UpdateSupplyItem({0})", subitem.PODetailID) })
+                                                    </td>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        @Html.EditorFor(modelItem => subitem.Construction, new { htmlAttributes = new { id = string.Format("item_Construction_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateContinuousItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        Punching
+                                                    </td>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        Size
+                                                    </td>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        No
+                                                    </td>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        C To C Location
+                                                    </td>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        From Edge
+                                                    </td>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        Press Bind Parts
+                                                    </td>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        Carbon Color Stub Size
+                                                    </td>
+                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                        Location
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        <label><input type="checkbox" value="" checked="@subitem.Punching" onchange=@string.Format("UpdateSupplyItem({0})", subitem.PODetailID) id=@string.Format("item_Punching_{0}", subitem.PODetailID) /></label>
+                                                    </td>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        @Html.EditorFor(modelItem => subitem.PunchSize, new { htmlAttributes = new { id = string.Format("item_PunchSize_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateContinuousItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        @Html.EditorFor(modelItem => subitem.PunchNo, new { htmlAttributes = new { id = string.Format("item_PunchNo_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateContinuousItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        @Html.EditorFor(modelItem => subitem.CtoC, new { htmlAttributes = new { id = string.Format("item_CtoC_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateContinuousItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        @Html.EditorFor(modelItem => subitem.FromEdge, new { htmlAttributes = new { id = string.Format("item_FromEdge_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateContinuousItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        @Html.EditorFor(modelItem => subitem.Bind, new { htmlAttributes = new { id = string.Format("item_Bind_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateContinuousItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        @Html.EditorFor(modelItem => subitem.StubSize, new { htmlAttributes = new { id = string.Format("item_StubSize_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateContinuousItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                    <td style="text-align:center; border:0px solid black;">
+                                                        @Html.EditorFor(modelItem => subitem.PunchLoc, new { htmlAttributes = new { id = string.Format("item_PunchLoc_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateContinuousItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                </tr>
+                                                @if (subitem.ContinuousItems != null)
+                                                {
+                                                    <tr>
+                                                        <td colspan="6">
+                                                            <table style="width:100%;">
+                                                                <tr>
+                                                                    <td class="table_header" style="text-align:center; border:0px solid black; vertical-align:middle;" rowspan="2">
+                                                                        PTS
+                                                                    </td>
+                                                                    <td class="table_header" style="text-align:center; border:0px solid black;" colspan="4">
+                                                                        Paper
+                                                                    </td>
+                                                                    <td class="table_header" style="text-align:center; border:0px solid black;" colspan="3">
+                                                                        Ink
+                                                                    </td>
+                                                                    <td class="table_header" style="text-align:center; border:0px solid black; vertical-align:middle;" rowspan="2">
+                                                                        Poly Plate
+                                                                    </td>
+                                                                    <td class="table_header" style="text-align:center; border:0px solid black;" colspan="2">
+                                                                        Face Copy
+                                                                    </td>
+                                                                    <td class="table_header" style="text-align:center; border:0px solid black;" colspan="2">
+                                                                        Marginal Perfs
+                                                                    </td>
+                                                                    <td class="table_header" style="text-align:center; border:0px solid black; vertical-align:middle;" rowspan="2">
+                                                                        Spec Perfs
+                                                                    </td>
+                                                                    <td class="table_header" style="text-align:center; border:0px solid black; vertical-align:middle;" rowspan="2">
+                                                                        Marginal Words (See copy for location)
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                                        Wt.
+                                                                    </td>
+                                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                                        Color
+                                                                    </td>
+                                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                                        Grade
+                                                                    </td>
+                                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                                        Size
+                                                                    </td>
+                                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                                        1st
+                                                                    </td>
+                                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                                        2nd
+                                                                    </td>
+                                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                                        3rd/Backer
+                                                                    </td>
+                                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                                        Chg.
+                                                                    </td>
+                                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                                        Same As
+                                                                    </td>
+                                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                                        Left
+                                                                    </td>
+                                                                    <td class="table_header" style="text-align:center; border:0px solid black;">
+                                                                        Right
+                                                                    </td>
+                                                                </tr>
+
+                                                                @foreach (var contitem in subitem.ContinuousItems)
+                                                                {
+                                                                    <tr>
+                                                                        <td style="text-align:center; border:0px solid black;">
+                                                                            @Html.HiddenFor(modelItem => contitem.ContPaperDetailID)
+                                                                            @Html.EditorFor(modelItem => contitem.StockNo, new { htmlAttributes = new { id = string.Format("item_StockNo_{0}", contitem.ContPaperDetailID), @class = "form-control", onblur = string.Format("UpdateContinuousSubItem({0})", contitem.ContPaperDetailID) } })
+                                                                        </td>
+                                                                        <td style="text-align:center; border:0px solid black;">
+                                                                            @Html.EditorFor(modelItem => contitem.StockWeight, new { htmlAttributes = new { id = string.Format("item_StockWeight_{0}", contitem.ContPaperDetailID), @class = "form-control", onblur = string.Format("UpdateContinuousSubItem({0})", contitem.ContPaperDetailID) } })
+                                                                        </td>
+                                                                        <td style="text-align:center; border:0px solid black;">
+                                                                            @Html.EditorFor(modelItem => contitem.StockColor, new { htmlAttributes = new { id = string.Format("item_StockColor_{0}", contitem.ContPaperDetailID), @class = "form-control", onblur = string.Format("UpdateContinuousSubItem({0})", contitem.ContPaperDetailID) } })
+                                                                        </td>
+                                                                        <td style="text-align:center; border:0px solid black;">
+                                                                            @Html.EditorFor(modelItem => contitem.StockGrade, new { htmlAttributes = new { id = string.Format("item_StockGrade_{0}", contitem.ContPaperDetailID), @class = "form-control", onblur = string.Format("UpdateContinuousSubItem({0})", contitem.ContPaperDetailID) } })
+                                                                        </td>
+                                                                        <td style="text-align:center; border:0px solid black;">
+                                                                            @Html.EditorFor(modelItem => contitem.StockSize, new { htmlAttributes = new { id = string.Format("item_StockSize_{0}", contitem.ContPaperDetailID), @class = "form-control", onblur = string.Format("UpdateContinuousSubItem({0})", contitem.ContPaperDetailID) } })
+                                                                        </td>
+                                                                        <td style="text-align:center; border:0px solid black;">
+                                                                            @Html.EditorFor(modelItem => contitem.Ink1st, new { htmlAttributes = new { id = string.Format("item_Ink1st_{0}", contitem.ContPaperDetailID), @class = "form-control", onblur = string.Format("UpdateContinuousSubItem({0})", contitem.ContPaperDetailID) } })
+                                                                        </td>
+                                                                        <td style="text-align:center; border:0px solid black;">
+                                                                            @Html.EditorFor(modelItem => contitem.Ink2nd, new { htmlAttributes = new { id = string.Format("item_Ink2nd_{0}", contitem.ContPaperDetailID), @class = "form-control", onblur = string.Format("UpdateContinuousSubItem({0})", contitem.ContPaperDetailID) } })
+                                                                        </td>
+                                                                        <td style="text-align:center; border:0px solid black;">
+                                                                            @Html.EditorFor(modelItem => contitem.Ink3rd, new { htmlAttributes = new { id = string.Format("item_Ink3rd_{0}", contitem.ContPaperDetailID), @class = "form-control", onblur = string.Format("UpdateContinuousSubItem({0})", contitem.ContPaperDetailID) } })
+                                                                        </td>
+                                                                        <td style="text-align:center; border:0px solid black;">
+                                                                            @Html.EditorFor(modelItem => contitem.PolyPlate, new { htmlAttributes = new { id = string.Format("item_PolyPlate_{0}", contitem.ContPaperDetailID), @class = "form-control", onblur = string.Format("UpdateContinuousSubItem({0})", contitem.ContPaperDetailID) } })
+                                                                        </td>
+                                                                        <td style="text-align:center; border:0px solid black;">
+                                                                            @Html.EditorFor(modelItem => contitem.FCChg, new { htmlAttributes = new { id = string.Format("item_FCChg_{0}", contitem.ContPaperDetailID), @class = "form-control", onblur = string.Format("UpdateContinuousSubItem({0})", contitem.ContPaperDetailID) } })
+                                                                        </td>
+                                                                        <td style="text-align:center; border:0px solid black;">
+                                                                            @Html.EditorFor(modelItem => contitem.FCSame, new { htmlAttributes = new { id = string.Format("item_FCSame_{0}", contitem.ContPaperDetailID), @class = "form-control", onblur = string.Format("UpdateContinuousSubItem({0})", contitem.ContPaperDetailID) } })
+                                                                        </td>
+                                                                        <td style="text-align:center; border:0px solid black;">
+                                                                            @Html.EditorFor(modelItem => contitem.MargLeft, new { htmlAttributes = new { id = string.Format("item_MargLeft_{0}", contitem.ContPaperDetailID), @class = "form-control", onblur = string.Format("UpdateContinuousSubItem({0})", contitem.ContPaperDetailID) } })
+                                                                        </td>
+                                                                        <td style="text-align:center; border:0px solid black;">
+                                                                            @Html.EditorFor(modelItem => contitem.MargRight, new { htmlAttributes = new { id = string.Format("item_MargRight_{0}", contitem.ContPaperDetailID), @class = "form-control", onblur = string.Format("UpdateContinuousSubItem({0})", contitem.ContPaperDetailID) } })
+                                                                        </td>
+                                                                        <td style="text-align:center; border:0px solid black;">
+                                                                            @Html.EditorFor(modelItem => contitem.SpecPerfs, new { htmlAttributes = new { id = string.Format("item_SpecPerfs_{0}", contitem.ContPaperDetailID), @class = "form-control", onblur = string.Format("UpdateContinuousSubItem({0})", contitem.ContPaperDetailID) } })
+                                                                        </td>
+                                                                        <td style="text-align:center; border:0px solid black;">
+                                                                            @Html.EditorFor(modelItem => contitem.MargWords, new { htmlAttributes = new { id = string.Format("item_MargWords_{0}", contitem.ContPaperDetailID), @class = "form-control", onblur = string.Format("UpdateContinuousSubItem({0})", contitem.ContPaperDetailID) } })
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                                <tr>
+                                                    <td colspan="6">
+                                                        @Html.ActionLink("Add Continuous Item", "AddContinuousItem", "Purchase", new { po = Model.PONumber, pod = subitem.PODetailID }, new { @class = "btn btn-primary link_small" })
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                    </div>
+                }
+                @Html.ActionLink("Add Continuous Item", "AddItem", "Purchase", new { po = Model.PONumber }, new { @class = "btn btn-primary link_small" })
+            </div>
+            <div id="Purchase_Item_3" style="display:none;">
+                Supply Items<br />
+                @if (Model.SupplyItems != null && Model.SupplyItems.Count() > 0)
+                {
+                    <div class="row">
+                        <div class="col-lg-10 col-md-12">
+                            <table class="table">
+                                <tr>
+                                    <th>
+                                        Item No
+                                    </th>
+                                    <th>
+                                        Ordered
+                                    </th>
+                                    <th colspan="2">
+                                        Product/Item
+                                    </th>
+                                    <th></th>
+                                </tr>
+                                @foreach (var subitem in Model.SupplyItems)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.HiddenFor(modelItem => subitem.TransactionID)
+                                            @Html.EditorFor(modelItem => subitem.ItemNo, new { htmlAttributes = new { id = string.Format("item_ItemNo_{0}", subitem.TransactionID), @class = "form-control", onblur = string.Format("UpdateSupplyItem({0})", subitem.TransactionID) } })
+                                        </td>
+                                        @*<td>
+                                            @Html.EditorFor(modelItem => subitem.UnitsSold, new { htmlAttributes = new { id = string.Format("item_UnitsSold_{0}", subitem.TransactionID), @class = "form-control", onblur = string.Format("UpdateSupplyItem({0})", subitem.TransactionID) } })
+                                        </td>*@
+                                        <td>
+                                            @Html.EditorFor(modelItem => subitem.UnitsOrdered, new { htmlAttributes = new { id = string.Format("item_UnitsOrdered_{0}", subitem.TransactionID), @class = "form-control", onblur = string.Format("UpdateSupplyItem({0})", subitem.TransactionID) } })
+                                        </td>
+                                        <td colspan="2">
+                                            @Html.DropDownListFor(modelItem => subitem.ProductID, new SelectList(ViewBag.SuppliesList, "Value", "Text", subitem.ProductID), null, new { id = string.Format("item_ProductID_{0}", subitem.TransactionID), @class = "form-control", @onchange = string.Format("UpdateSupplyItem({0})", subitem.TransactionID) })
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            Transaction Description
+                                        </th>
+                                        <th>
+                                            Freight
+                                        </th>
+                                        <th>
+                                            Add Tax
+                                        </th>
+                                        <th>
+                                            Tax Value
+                                        </th>
+                                        <th>
+                                            Total
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            @Html.EditorFor(modelItem => subitem.TransactionDescription, new { htmlAttributes = new { id = string.Format("item_TransactionDescription_{0}", subitem.TransactionID), @class = "form-control", onblur = string.Format("UpdateSupplyItem({0})", subitem.TransactionID) } })
+                                        </td>
+                                        <td>
+                                            @Html.EditorFor(modelItem => subitem.Freight, new { htmlAttributes = new { id = string.Format("item_Freight_{0}", subitem.TransactionID), @class = "form-control", onblur = string.Format("UpdateSupplyItem({0})", subitem.TransactionID) } })
+                                        </td>
+                                        <td>
+                                            <label><input type="checkbox" value="" checked="@subitem.AddTax" onchange=@string.Format("UpdateSupplyItem({0})", subitem.TransactionID) id=@string.Format("item_AddTax_{0}", subitem.TransactionID) /></label>
+                                        </td>
+                                        <td>
+                                            @Html.EditorFor(modelItem => subitem.TaxValue, new { htmlAttributes = new { id = string.Format("item_TaxValue_{0}", subitem.TransactionID), @class = "form-control", onblur = string.Format("UpdateSupplyItem({0})", subitem.TransactionID) } })
+                                        </td>
+                                        <td>
+                                            @Html.EditorFor(modelItem => subitem.Extensionq, new { htmlAttributes = new { id = string.Format("item_Extensionq_{0}", subitem.TransactionID), @class = "form-control", onblur = string.Format("UpdateSupplyItem({0})", subitem.TransactionID) } })
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:0px solid transparent;"></td>
+                                        <td style="border:0px solid transparent;" colspan="5">
+                                            <table style="width:100%;">
+                                                <tr>
+                                                    <td class="table_header" style="border:0px solid transparent;">
+                                                        Rec All
+                                                    </td>
+                                                    <td class="table_header" style="border:0px solid transparent;">
+                                                        Rec Partial
+                                                    </td>
+                                                    <td class="table_header" style="border:0px solid transparent;">
+                                                        Date/Time
+                                                    </td>
+                                                    <td class="table_header" style="border:0px solid transparent;">
+                                                        Qty Rec
+                                                    </td>
+                                                    <td class="table_header" style="border:0px solid transparent;">
+                                                        Checked By
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="border:0px solid transparent;">
+                                                        <label><input type="checkbox" value="" checked="@subitem.Received" onchange=@string.Format("UpdateSupplyItem({0})", subitem.TransactionID) id=@string.Format("item_Received_{0}", subitem.TransactionID) /></label>
+                                                    </td>
+                                                    <td style="border:0px solid transparent;">
+                                                        <label><input type="checkbox" value="" checked="@subitem.PartialReceived" onchange=@string.Format("UpdateSupplyItem({0})", subitem.TransactionID) id=@string.Format("item_PartialReceived_{0}", subitem.TransactionID) /></label>
+                                                    </td>
+                                                    <td style="border:0px solid transparent;">
+                                                        @Html.EditorFor(modelItem => subitem.DateReceived, new { htmlAttributes = new { id = string.Format("item_DateReceived_{0}", subitem.TransactionID), @class = "form-control datepicker", onblur = string.Format("UpdateSupplyItem({0})", subitem.TransactionID) } })
+                                                    </td>
+                                                    <td style="border:0px solid transparent;">
+                                                        @Html.EditorFor(modelItem => subitem.QtyReceived, new { htmlAttributes = new { id = string.Format("item_QtyReceived_{0}", subitem.TransactionID), @class = "form-control", onblur = string.Format("UpdateSupplyItem({0})", subitem.TransactionID) } })
+                                                    </td>
+                                                    <td style="border:0px solid transparent;">
+                                                        @Html.DropDownListFor(modelItem => subitem.ReceivedBy, new SelectList(ViewBag.ReceivedList, "Value", "Text", subitem.ReceivedBy), null, new { id = string.Format("item_ReceivedBy_{0}", subitem.TransactionID), @class = "form-control", @onchange = string.Format("UpdateSupplyItem({0})", subitem.TransactionID) })
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                    </div>
+                }
+                @Html.ActionLink("Add Supply Item", "AddItem", "Purchase", new { po = Model.PONumber }, new { @class = "btn btn-primary link_small" })
+            </div>
+            <div id="Purchase_Item_4" style="display:none;">
+                Miscellaneous Items<br />
+                @if (Model.PurchaseOrderItems != null && Model.PurchaseOrderItems.Count() > 0)
+                {
+                    <div class="row">
+                        <div class="col-lg-10 col-md-12">
+                            <table class="table">
+                                <tr>
+                                    <th>
+                                        Item No
+                                    </th>
+                                    <th>
+                                        Ordered
+                                    </th>
+                                    <th>
+                                        Description
+                                    </th>
+                                    <th>
+                                        Unit Cost
+                                    </th>
+                                    <th>
+                                        Per
+                                    </th>
+                                    <th>
+                                        Extension
+                                    </th>
+                                </tr>
+                                @foreach (var subitem in Model.PurchaseOrderItems)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.HiddenFor(modelItem => subitem.PODetailID)
+                                            @Html.HiddenFor(modelItem => subitem.PONumber, new { id = string.Format("item_PONumber_{0}", subitem.PODetailID) })
+                                            @Html.EditorFor(modelItem => subitem.ItemNo, new { htmlAttributes = new { id = string.Format("item_ItemNo_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateMiscellaneousItem({0})", subitem.PODetailID) } })
+                                        </td>
+                                        <td>
+                                            @Html.EditorFor(modelItem => subitem.Quantity, new { htmlAttributes = new { id = string.Format("item_Quantity_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateMiscellaneousItem({0})", subitem.PODetailID) } })
+                                        </td>
+                                        <td>
+                                            @Html.EditorFor(modelItem => subitem.ItemDescription, new { htmlAttributes = new { id = string.Format("item_Description_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateMiscellaneousItem({0})", subitem.PODetailID) } })
+                                        </td>
+                                        <td>
+                                            @Html.EditorFor(modelItem => subitem.UnitCost, new { htmlAttributes = new { id = string.Format("item_UnitCost_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateMiscellaneousItem({0})", subitem.PODetailID) } })
+                                        </td>
+                                        <td>
+                                            @Html.DropDownListFor(modelItem => subitem.PricePerUnit, new SelectList(ViewBag.PricingList2, "Value", "Text", subitem.PricePerUnit), null, new { @class = "form-control", id = string.Format("item_PricePerUnit_{0}", subitem.PODetailID), @onchange = string.Format("UpdateMiscellaneousItem({0})", subitem.PODetailID) })
+                                            @*@Html.EditorFor(modelItem => subitem.PricePerUnit, new { htmlAttributes = new { id = string.Format("item_PricePerUnit_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateMiscellaneousItem({0})", subitem.PODetailID) } })*@
+                                        </td>
+                                        <td>
+                                            @Html.EditorFor(modelItem => subitem.Extensionq, new { htmlAttributes = new { id = string.Format("item_Extensionq_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateMiscellaneousItem({0})", subitem.PODetailID) } })
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:0px solid transparent;"></td>
+                                        <td style="border:0px solid transparent;" colspan="5">
+                                            <table style="width:100%;">
+                                                <tr>
+                                                    <td class="table_header" style="border:0px solid transparent;">
+                                                        Rec All
+                                                    </td>
+                                                    <td class="table_header" style="border:0px solid transparent;">
+                                                        Rec Partial
+                                                    </td>
+                                                    <td class="table_header" style="border:0px solid transparent;">
+                                                        Date/Time
+                                                    </td>
+                                                    <td class="table_header" style="border:0px solid transparent;">
+                                                        Qty Rec
+                                                    </td>
+                                                    <td class="table_header" style="border:0px solid transparent;">
+                                                        Checked In By
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="border:0px solid transparent;">
+                                                        <label><input type="checkbox" value="" checked="@subitem.Received" onchange=@string.Format("UpdateMiscellaneousItem({0})", subitem.PODetailID) id=@string.Format("item_Received_{0}", subitem.PODetailID) /></label>
+                                                    </td>
+                                                    <td style="border:0px solid transparent;">
+                                                        <label><input type="checkbox" value="" checked="@subitem.PartialReceived" onchange=@string.Format("UpdateMiscellaneousItem({0})", subitem.PODetailID) id=@string.Format("item_PartialReceived_{0}", subitem.PODetailID) /></label>
+                                                    </td>
+                                                    <td style="border:0px solid transparent;">
+                                                        @Html.EditorFor(modelItem => subitem.DateReceived, new { htmlAttributes = new { id = string.Format("item_DateReceived_{0}", subitem.PODetailID), @class = "form-control datepicker", onblur = string.Format("UpdateMiscellaneousItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                    <td style="border:0px solid transparent;">
+                                                        @Html.EditorFor(modelItem => subitem.QtyReceived, new { htmlAttributes = new { id = string.Format("item_QtyReceived_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateMiscellaneousItem({0})", subitem.PODetailID) } })
+                                                    </td>
+                                                    <td style="border:0px solid transparent;">
+                                                        @Html.DropDownListFor(modelItem => subitem.ReceivedBy, new SelectList(ViewBag.ReceivedList, "Value", "Text", subitem.ReceivedBy), null, new { id = string.Format("item_ReceivedBy_{0}", subitem.PODetailID), @class = "form-control", @onchange = string.Format("UpdateMiscellaneousItem({0})", subitem.PODetailID) })
+                                                        @*@Html.EditorFor(modelItem => subitem.CheckedBy, new { htmlAttributes = new { id = string.Format("item_CheckedBy_{0}", subitem.PODetailID), @class = "form-control", onblur = string.Format("UpdateMiscellaneousItem({0})", subitem.PODetailID) } })*@
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+                                @*<tr>
+                            <td colspan="5" style="text-align:right;">
+                                Total:
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.Total, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>*@
+                            </table>
+                        </div>
+                    </div>
+                }
+                @Html.ActionLink("Add Miscellaneous Item", "AddItem", "Purchase", new { po = Model.PONumber }, new { @class = "btn btn-primary link_small" })
+            </div>
+
+            <div class="row">
+                <div class="col-md-3 pull-right" style="text-align:right;">
+                    @Html.ActionLink("Done", "Order", "Purchase", new { so = Model.SalesOrderNo }, new { @class = "btn btn-success link_small" })
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@section scripts{
+    <script type="text/javascript">
+        var applicationRoot = function () {
+            var appFolders = window.location.pathname.split('/');
+            return window.location.origin + "/" + appFolders[1];
+        }
+
+        $(function () {
+            //console.log($("#POType").val());
+            $('#Purchase_Item_' + $("#POType").val()).show();
+        });
+
+        $(function () { // will trigger when the document is ready
+            $('.datepicker').datepicker(); //Initialise any date pickers
+        });
+
+        var UpdatePurchaseOrder = function () {
+            //console.log($("#PurchaseOrderForm").serialize());
+            //$("#SalesOrderForm").submit;
+
+            console.log($("#POType").val());
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Purchase/UpdatePurchaseOrder",
+                data: $("#PurchaseOrderForm").serialize(),
+                dataType: "json",
+                success: function (result) {
+
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Purchase Order did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var UpdatePurchaseOrderType = function () {
+            UpdatePurchaseOrder();
+
+            window.location.replace("../Purchase/Edit?po=" + $("#PONumber").val());
+        };
+
+        var UpdateAccountDetails = function () {
+            console.log($("#AccountCode").val());
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Purchase/AccountDetails",
+                data: {
+                    code: $("#AccountCode").val()
+                },
+                dataType: "json",
+                success: function (result) {
+                    //console.log(result);
+                    var account = $.parseJSON(JSON.stringify(result));
+                    $("#AccountDescription").val(account.Description);
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Purchase Order did not save correctly.");
+                    }
+                }
+            });
+
+            UpdatePurchaseOrder();
+        };
+
+        var UpdateShippingMethodsList = function () {
+            console.log($("#ShipperID").val());
+            var root = applicationRoot();
+            $.ajax({
+                url: root + "/Purchase/FilteredShippingMethods",
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    id: $("#ShipperID").val()
+                },
+                success: function (response) {
+                    $("#ShippingMethod").html('');
+                    //console.log(response);
+                    $.each(response, function (index, item) {
+                        //console.log(item);
+                        $('#ShippingMethod')
+                            .append($('<option>', { value: item.Value })
+                                .text(item.Text));
+                    });
+                }
+            });
+
+            UpdatePurchaseOrder();
+        };
+
+        var UpdateVendorDetails = function () {
+            //console.log($("#VendorNo").val());
+
+            UpdatePurchaseOrder();
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Purchase/VendorDetails",
+                data: {
+                    id: $("#VendorNo").val()
+                },
+                dataType: "json",
+                success: function (result) {
+                    //console.log(result);
+                    var vendor = $.parseJSON(JSON.stringify(result));
+                    //console.log(vendor.VendorAddress1);
+                    $("#VendorAddress1").val(vendor.VendorAddress1);
+                    $("#VendorAddress2").val(vendor.VendorAddress2);
+                    $("#VendorPhone").val(vendor.VendorPhone);
+                    $("#VendorCity").val(vendor.VendorCity);
+                    $("#VendorState").val(vendor.VendorState);
+                    $("#VendorZip").val(vendor.VendorZip);
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Purchase Order did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var UpdateShipToAddress = function () {
+            //console.log($("#CustomerID").val());
+            //console.log($("#CustomerAddressID").val());
+
+            //UpdatePurchaseOrder();
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "GET",
+                url: root + "/Purchase/CustomerAddressList",
+                data: {
+                    id: $("#CustomerID").val()
+                },
+                dataType: "json",
+                success: function (response) {
+                    $("#CustomerAddressID").html('');
+                    console.log(response);
+                    $.each(response, function (index, item) {
+                        //console.log(item);
+                        $('#CustomerAddressID')
+                            .append($('<option>', { value: item.Value })
+                                .text(item.Text));
+                    });
+
+                    UpdateAddressDetails();
+                }
+            });
+        };
+
+        var UpdateAddressDetails = function () {
+            //console.log($("#CustomerAddressID").val());
+
+            UpdatePurchaseOrder();
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Purchase/AddressDetails",
+                data: {
+                    id: $("#CustomerAddressID").val()
+                },
+                dataType: "json",
+                success: function (result) {
+                    //console.log(result);
+                    var address = $.parseJSON(JSON.stringify(result));
+                    //console.log(vendor.VendorAddress1);
+                    $("#CustomerAddress1").val(address.ShipAddress1);
+                    $("#CustomerAddress2").val(address.ShipAddress2);
+                    $("#CustomerCity").val(address.ShipCity);
+                    $("#CustomerState").val(address.ShipState);
+                    $("#CustomerZip").val(address.ShipZip);
+                }
+            });
+        };
+
+        var UpdateEnvelopeItem = function (id) {
+            console.log(id);
+
+            // Calculate line item total price
+            if ($("#item_PricePerUnit_" + id).val() == 0) {
+                $("#item_Extensionq_" + id).val($("#item_UnitCost_" + id).val());
+            }
+            else {
+                $("#item_Extensionq_" + id).val($("#item_Quantity_" + id).val() * ($("#item_UnitCost_" + id).val() / $("#item_PricePerUnit_" + id).val()));
+            };
+
+            var envelopeItem = {
+                PODetailID: id,
+                PONumber: $("#item_PONumber_" + id).val(),
+                ItemNo: $("#item_ItemNo_" + id).val(),
+                Quantity: $("#item_Quantity_" + id).val(),
+                ItemDescription: $("#item_ItemDescription_" + id).val(),
+                UnitCost: $("#item_UnitCost_" + id).val(),
+                PricePerUnit: $("#item_PricePerUnit_" + id).val(),
+                Extensionq: $("#item_Extensionq_" + id).val(),
+                StockWeight: $("#item_StockWeight_" + id).val(),
+                StockColor: $("#item_StockColor_" + id).val(),
+                StockGrade: $("#item_StockGrade_" + id).val(),
+                StockSize: $("#item_StockSize_" + id).val(),
+                Ink1st: $("#item_Ink1st_" + id).val(),
+                Ink2nd: $("#item_Ink2nd_" + id).val(),
+                Ink3rd: $("#item_Ink3rd_" + id).val(),
+                Ink4th: $("#item_Ink4th_" + id).val(),
+                Received: $("#item_Received_" + id).is(":checked"),
+                PartialReceived: $("#item_PartialReceived_" + id).is(":checked"),
+                DateReceived: $("#item_DateReceived_" + id).val(),
+                QtyReceived: $("#item_QtyReceived_" + id).val(),
+                ReceivedBy: $("#item_ReceivedBy_" + id).val()
+            };
+
+            console.log(envelopeItem);
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Purchase/UpdateEnvelopeItem",
+                data: envelopeItem,
+                dataType: "json",
+                success: function (result) {
+
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Purchase Order Item did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var UpdateContinuousItem = function (id) {
+            console.log(id);
+
+            // Calculate line item total price
+            if ($("#item_PricePerUnit_" + id).val() == 0) {
+                $("#item_Extensionq_" + id).val($("#item_UnitCost_" + id).val());
+            }
+            else {
+                $("#item_Extensionq_" + id).val($("#item_Quantity_" + id).val() * ($("#item_UnitCost_" + id).val() / $("#item_PricePerUnit_" + id).val()));
+            };
+
+            var continuousItem = {
+                PODetailID: id,
+                PONumber: $("#item_PONumber_" + id).val(),
+                ItemNo: $("#item_ItemNo_" + id).val(),
+                Quantity: $("#item_Quantity_" + id).val(),
+                ItemDescription: $("#item_ItemDescription_" + id).val(),
+                UnitCost: $("#item_UnitCost_" + id).val(),
+                PricePerUnit: $("#item_PricePerUnit_" + id).val(),
+                Extensionq: $("#item_Extensionq_" + id).val(),
+                Numbering: $("#item_Numbering_" + id).is(":checked"),
+                StartNumber: $("#item_StartNumber_" + id).val(),
+                NumberColor: $("#item_NumberColor_" + id).val(),
+                NumberStyle: $("#item_NumberStyle_" + id).val(),
+                NoMissing: $("#item_NoMissing_" + id).is(":checked"),
+                MICR: $("#item_MICR_" + id).val(),
+                Construction: $("#item_Construction_" + id).val(),
+                Punching: $("#item_Punching_" + id).is(":checked"),
+                PunchSize: $("#item_PunchSize_" + id).val(),
+                PunchNo: $("#item_PunchNo_" + id).val(),
+                CtoC: $("#item_CtoC_" + id).val(),
+                FromEdge: $("#item_FromEdge_" + id).val(),
+                Bind: $("#item_Bind_" + id).val(),
+                StubSize: $("#item_StubSize_" + id).val(),
+                PunchLoc: $("#item_PunchLoc_" + id).val()
+            };
+
+            console.log(continuousItem);
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Purchase/UpdateContinuousItem",
+                data: continuousItem,
+                dataType: "json",
+                success: function (result) {
+
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Purchase Order Item did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var UpdateContinuousSubItem = function (id) {
+            console.log(id);
+
+            var continuousSubItem = {
+                ContPaperDetailID: id,
+                StockNo: $("#item_StockNo_" + id).val(),
+                StockWeight: $("#item_StockWeight_" + id).val(),
+                StockColor: $("#item_StockColor_" + id).val(),
+                StockGrade: $("#item_StockGrade_" + id).val(),
+                StockSize: $("#item_StockSize_" + id).val(),
+                Ink1st: $("#item_Ink1st_" + id).val(),
+                Ink2nd: $("#item_Ink2nd_" + id).val(),
+                Ink3rd: $("#item_Ink3rd_" + id).val(),
+                PolyPlate: $("#item_PolyPlate_" + id).val(),
+                FCChg: $("#item_FCChg_" + id).val(),
+                FCSame: $("#item_FCSame_" + id).val(),
+                MargLeft: $("#item_MargLeft_" + id).val(),
+                MargRight: $("#item_MargRight_" + id).val(),
+                SpecPerfs: $("#item_SpecPerfs_" + id).val(),
+                MargWords: $("#item_MargWords_" + id).val()
+            };
+
+            console.log(continuousSubItem);
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Purchase/UpdateContinuousSubItem",
+                data: continuousSubItem,
+                dataType: "json",
+                success: function (result) {
+
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Purchase Order Item did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var UpdateSupplyItem = function (id) {
+            console.log(id);
+
+            var supplyItem = {
+                TransactionID: id,
+                ItemNo: $("#item_ItemNo_" + id).val(),
+                UnitsSold: $("#item_UnitsSold_" + id).val(),
+                UnitsOrdered: $("#item_UnitsOrdered_" + id).val(),
+                ProductID: $("#item_ProductID_" + id).val(),
+                TransactionDescription: $("#item_TransactionDescription_" + id).val(),
+                Freight: $("#item_Freight_" + id).val(),
+                AddTax: $("#item_AddTax_" + id).val(),
+                TaxValue: $("#item_TaxValue_" + id).val(),
+                Extensionq: $("#item_Extensionq_" + id).val(),
+                Received: $("#item_Received_" + id).is(":checked"),
+                PartialReceived: $("#item_PartialReceived_" + id).is(":checked"),
+                DateReceived: $("#item_DateReceived_" + id).val(),
+                QtyReceived: $("#item_QtyReceived_" + id).val(),
+                ReceivedBy: $("#item_ReceivedBy_" + id).val()
+            };
+
+            console.log(supplyItem);
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Purchase/UpdateSupplyItem",
+                data: supplyItem,
+                dataType: "json",
+                success: function (result) {
+
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Purchase Order Item did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var UpdateMiscellaneousItem = function (id) {
+            console.log(id);
+
+            // Calculate line item total price
+            if ($("#item_PricePerUnit_" + id).val() == 0) {
+                $("#item_Extensionq_" + id).val($("#item_UnitCost_" + id).val());
+            }
+            else {
+                //console.log($("#item_Quantity_" + id).val());
+                //console.log($("#item_PricePerUnit_" + id).val());
+                //console.log($("#item_CustPrice_" + id).val() / $("#item_PricePerUnit_" + id).val());
+                $("#item_Extensionq_" + id).val($("#item_Quantity_" + id).val() * ($("#item_UnitCost_" + id).val() / $("#item_PricePerUnit_" + id).val()));
+            };
+
+            var miscellaneousItem = {
+                PODetailID: id,
+                PONumber: $("#item_PONumber_" + id).val(),
+                ItemNo: $("#item_ItemNo_" + id).val(),
+                Quantity: $("#item_Quantity_" + id).val(),
+                ItemDescription: $("#item_ItemDescription_" + id).val(),
+                UnitCost: $("#item_UnitCost_" + id).val(),
+                PricePerUnit: $("#item_PricePerUnit_" + id).val(),
+                Extensionq: $("#item_Extensionq_" + id).val(),
+                Received: $("#item_Received_" + id).is(":checked"),
+                PartialReceived: $("#item_PartialReceived_" + id).is(":checked"),
+                DateReceived: $("#item_DateReceived_" + id).val(),
+                QtyReceived: $("#item_QtyReceived_" + id).val(),
+                ReceivedBy: $("#item_ReceivedBy_" + id).val()
+            };
+
+            console.log(miscellaneousItem);
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Purchase/UpdatePurchaseOrderItem",
+                data: miscellaneousItem,
+                dataType: "json",
+                success: function (result) {
+
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Purchase Order Item did not save correctly.");
+                    }
+                }
+            });
+        };
+
+    </script>
+}

@@ -1,0 +1,1068 @@
+﻿@model List<SalesOrder2021.Models.PurchaseOrderDetails>
+
+@{
+    ViewBag.Title = "Purchase Order";
+}
+
+<style>
+    .table_header {
+        border: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_subheader {
+        border-bottom: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_content {
+        border: 1px solid black;
+        text-align: center;
+        vertical-align: top;
+        padding: 5px;
+    }
+
+    .table_content_large {
+        border: 1px solid black;
+        text-align: center;
+        font-size: 24px;
+        padding: 10px;
+    }
+
+    .row_separator {
+        border: 2px solid black;
+    }
+</style>
+
+<br />
+
+@if (Model != null && Model.Count() > 0)
+{
+    <div>
+        @Html.ActionLink("Sales Order", "Order", "Sales", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Purchase Order", "Order", "Purchase", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Shipping Order", "Order", "Shipping", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Election Order", "Order", "Election", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+    </div>
+
+    <br />
+
+    <div>
+        @Html.ActionLink("Add Purchase Order", "Add", "Purchase", new { so = ViewBag.SalesOrder }, new { @class = "link_small" })
+    </div>
+
+    var i = 0;
+    foreach (var item in Model)
+    {
+        { i++; }
+        <br />
+
+        <h2 style="text-align:center;">Purchase Order</h2>
+        if (item.POStatus != 2)
+        {
+        <p style="text-align:center; margin-top:-10px;">
+            <a id="btnAdd" href="#" style="font-size:16px; text-align:center;" onclick='EditPurchaseOrder(@i)'>Edit</a>
+        </p>
+        }
+        else
+        {
+            <p>&nbsp;</p>
+        }
+
+        <div class="form-horizontal">
+            <div class="row">
+                <div class="col-lg-5 col-md-7" style="min-width:500px;">
+                    <img src='@Url.Content("~/Images/AESslug.png")' width="460" />
+                </div>
+
+                <div class="col-md-5">
+                    <table style="border:1px solid black; width:100%;">
+                        <tr>
+                            <td class="table_header" style="text-align:center;">
+                                Quote/Account No
+                            </td>
+
+                            <td class="table_header" colspan="2" style="text-align:right; padding-right:20px;">
+                                Purchase Order No
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.QuoteNo, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="table_content" style="padding:0;">
+                                <table style="margin:0; width:100%;">
+                                    <tr>
+                                        <td class="table_subheader">
+                                            Account Code
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            &nbsp;
+                                            @Html.DisplayFor(modelItem => item.AccountCode, new { htmlAttributes = new { @class = "form-control" } })
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="table_content_large" style="font-weight:600;">
+                                @Html.HiddenFor(modelItem => item.PONumber, new { id = string.Format("item_PONumber_{0}", i) })
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.PONumber, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                    </table>
+
+                    <br />
+
+                    <table style="border:1px solid black; width:100%;">
+                        <tr>
+                            <td class="table_header" style="text-align:center;" width="25%">
+                                Date Of Order
+                            </td>
+                            <td class="table_header" style="text-align:center;" width="25%">
+                                Requested Ship Date
+                            </td>
+                            <td class="table_header" style="text-align:center;" width="25%">
+                                Ship Via
+                            </td>
+                            <td class="table_header" style="text-align:center;" width="25%">
+                                Shipping Method
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:center;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.OrderDate, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="table_content" style="text-align:center;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.ReqShipDate, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="table_content" style="text-align:center;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.ShipperName, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="table_content" style="text-align:center;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.ShippingMethod, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-5 col-md-7">
+                    <b>Status:</b> @Html.DisplayFor(modelItem => item.Status, new { htmlAttributes = new { @class = "form-control" } })
+                    <br />
+                    <b>Type:</b> @Html.DisplayFor(modelItem => item.OrderType, new { htmlAttributes = new { @class = "form-control" } })
+                    <table style="border:1px solid black; width:100%;">
+                        <tr>
+                            <td class="table_header" style="text-align:center;" width="50%" colspan="2">
+                                Order Status
+                            </td>
+                            <td class="table_header" style="text-align:center;" width="50%" colspan="2">
+                                Composition
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:center;" colspan="2">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.OrderStatus, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="table_content" style="text-align:center;" colspan="2">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.Composition, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_header" style="text-align:left;">
+                                Previous Job No
+                            </td>
+                            <td class="table_content" style="text-align:left;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.PrevJobNo, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="table_header" style="text-align:left;">
+                                Date
+                            </td>
+                            <td class="table_content" style="text-align:left;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.PrevDate, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                    </table>
+
+                    <br />
+
+                    <table style="width:100%;">
+                        <tr>
+                            <td class="table_header" style="text-align:center; border:1px solid black; " colspan="3">
+                                Vendor
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left; border:1px solid black; " colspan="3">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.VendorName, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left; border:1px solid black; " colspan="3">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.VendorAddress1, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left; border:1px solid black; " colspan="3">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.VendorAddress2, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left; border:1px solid black; ">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.VendorCity, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="table_content" style="text-align:center; border:1px solid black; ">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.VendorState, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="table_content" style="text-align:center; border:1px solid black; ">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.VendorZip, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:right; border:0px solid transparent;" colspan="3">
+                                Vendor Phone:
+                                @Html.DisplayFor(modelItem => item.VendorPhone, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                </div>
+
+                <div class="col-md-5">
+                    <table style="width:100%;">
+                        <tr>
+                            <td class="table_header" style="text-align:center; border:1px solid black;" colspan="3">
+                                Ship To
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left; border:1px solid black;" colspan="3">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.CustomerName, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left; border:1px solid black;" colspan="3">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.CustomerAddress1, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left; border:1px solid black;" colspan="3">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.CustomerAddress2, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left; border:1px solid black;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.CustomerCity, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="table_content" style="text-align:center; border:1px solid black;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.CustomerState, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="table_content" style="text-align:center; border:1px solid black;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.CustomerZip, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_header" style="text-align:center; border:1px solid black;">
+                                Attention
+                            </td>
+                            <td class="table_header" style="text-align:center; border:1px solid black; " colspan="2">
+                                Customer Phone
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:center; border:1px solid black;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.CustomerContactName, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="table_content" style="text-align:center; border:1px solid black;" colspan="2">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.CustomerPhone, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:right; border:0px solid transparent;" colspan="3">
+                                @Html.DisplayFor(modelItem => item.ForCustomer, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-10 col-md-12" style="font-weight: 600;">
+                    Special Instructions
+                </div>
+                <div class="col-lg-10 col-md-12">
+                    @Html.DisplayFor(modelItem => item.SpecInst, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+
+            <br />
+
+
+            @if (item.POType == 1)
+            {
+                <div class="row">
+                    <div class="col-lg-10 col-md-12">
+                        <table class="table">
+                            <tr>
+                                <th>
+                                    Item No
+                                </th>
+                                <th>
+                                    Ordered
+                                </th>
+                                <th>
+                                    Description
+                                </th>
+                                <th>
+                                    Unit Cost
+                                </th>
+                                <th>
+                                    Per
+                                </th>
+                                <th>
+                                    Extension
+                                </th>
+                            </tr>
+                            @foreach (var subitem in item.PurchaseOrderItems)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => subitem.ItemNo)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => subitem.Quantity)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => subitem.ItemDescription)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => subitem.UnitCost)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => subitem.PricePerUnit)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => subitem.Extensionq)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        &nbsp;
+                                    </td>
+                                    <td colspan="5">
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;" colspan="4">
+                                                    Paper
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;" colspan="4">
+                                                    Ink
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Wt.
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Color
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Grade
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Size
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    1st
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    2nd
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    3rd
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    4th
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    @Html.DisplayFor(modelItem => subitem.StockWeight)
+                                                </td>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    @Html.DisplayFor(modelItem => subitem.StockColor)
+                                                </td>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    @Html.DisplayFor(modelItem => subitem.StockGrade)
+                                                </td>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    @Html.DisplayFor(modelItem => subitem.StockSize)
+                                                </td>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    @Html.DisplayFor(modelItem => subitem.Ink1st)
+                                                </td>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    @Html.DisplayFor(modelItem => subitem.Ink2nd)
+                                                </td>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    @Html.DisplayFor(modelItem => subitem.Ink3rd)
+                                                </td>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    @Html.DisplayFor(modelItem => subitem.Ink4th)
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border:0px solid transparent;"></td>
+                                    <td style="border:0px solid transparent;" colspan="5">
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <td class="table_header" style="border:0px solid transparent;">
+                                                    Rec All
+                                                </td>
+                                                <td class="table_header" style="border:0px solid transparent;">
+                                                    Rec Partial
+                                                </td>
+                                                <td class="table_header" style="border:0px solid transparent;">
+                                                    Date/Time
+                                                </td>
+                                                <td class="table_header" style="border:0px solid transparent;">
+                                                    Qty Rec
+                                                </td>
+                                                <td class="table_header" style="border:0px solid transparent;">
+                                                    Checked By
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border:0px solid transparent;">
+                                                    <label><input type="checkbox" value="" checked="@subitem.Received" /></label>
+                                                </td>
+                                                <td style="border:0px solid transparent;">
+                                                    <label><input type="checkbox" value="" checked="@subitem.PartialReceived" /></label>
+                                                </td>
+                                                <td style="border:0px solid transparent;">
+                                                    @Html.DisplayFor(modelItem => subitem.DateReceived)
+                                                </td>
+                                                <td style="border:0px solid transparent;">
+                                                    @Html.DisplayFor(modelItem => subitem.QtyReceived)
+                                                </td>
+                                                <td style="border:0px solid transparent;">
+                                                    @Html.DisplayFor(modelItem => subitem.CheckedBy)
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td colspan="5" style="text-align:right;">
+                                    Total:
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Total, new { htmlAttributes = new { @class = "form-control" } })
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            }
+            else if (item.POType == 2)
+            {
+                <div class="row">
+                    <div class="col-lg-10 col-md-12">
+                        <table class="table">
+                            <tr>
+                                <th>
+                                    Item No
+                                </th>
+                                <th>
+                                    Ordered
+                                </th>
+                                <th>
+                                    Description
+                                </th>
+                                <th>
+                                    Unit Cost
+                                </th>
+                                <th>
+                                    Per
+                                </th>
+                                <th>
+                                    Extension
+                                </th>
+                            </tr>
+                            @foreach (var subitem in item.PurchaseOrderItems)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => subitem.ItemNo)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => subitem.Quantity)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => subitem.ItemDescription)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => subitem.UnitCost)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => subitem.PricePerUnit)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => subitem.Extensionq)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        &nbsp;
+                                    </td>
+                                    <td colspan="5">
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Numbering
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;" colspan="2">
+                                                    Starting Number
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Color
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Number Style
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Guarnateed No Missing
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    MICR
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Construction
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    <label><input type="checkbox" value="" checked="@subitem.Numbering" /></label>
+                                                </td>
+                                                <td style="text-align:center; border:1px solid black;" colspan="2">
+                                                    @Html.DisplayFor(modelItem => subitem.StartNumber)
+                                                </td>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    @Html.DisplayFor(modelItem => subitem.NumberColor)
+                                                </td>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    @Html.DisplayFor(modelItem => subitem.NumberStyle)
+                                                </td>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    <label><input type="checkbox" value="" checked="@subitem.NoMissing" /></label>
+                                                </td>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    @Html.DisplayFor(modelItem => subitem.MICR)
+                                                </td>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    @Html.DisplayFor(modelItem => subitem.Construction)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Punching
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Size
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    No
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    C To C Location
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    From Edge
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Press Bind Parts
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Carbon Color Stub Size
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Location
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    <label><input type="checkbox" value="" checked="@subitem.Punching" /></label>
+                                                </td>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    @Html.DisplayFor(modelItem => subitem.PunchSize)
+                                                </td>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    @Html.DisplayFor(modelItem => subitem.PunchNo)
+                                                </td>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    @Html.DisplayFor(modelItem => subitem.CtoC)
+                                                </td>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    @Html.DisplayFor(modelItem => subitem.FromEdge)
+                                                </td>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    @Html.DisplayFor(modelItem => subitem.Bind)
+                                                </td>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    @Html.DisplayFor(modelItem => subitem.StubSize)
+                                                </td>
+                                                <td style="text-align:center; border:1px solid black;">
+                                                    @Html.DisplayFor(modelItem => subitem.PunchLoc)
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="6">
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <td class="table_header" style="text-align:center; border:1px solid black; vertical-align:middle;" rowspan="2">
+                                                    PTS
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;" colspan="4">
+                                                    Paper
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;" colspan="3">
+                                                    Ink
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black; vertical-align:middle;" rowspan="2">
+                                                    Poly Plate
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;" colspan="2">
+                                                    Face Copy
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;" colspan="2">
+                                                    Marginal Perfs
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black; vertical-align:middle;" rowspan="2">
+                                                    Spec Perfs
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black; vertical-align:middle;" rowspan="2">
+                                                    Marginal Words (See copy for location)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Wt.
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Color
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Grade
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Size
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    1st
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    2nd
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    3rd/Backer
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Chg.
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Same As
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Left
+                                                </td>
+                                                <td class="table_header" style="text-align:center; border:1px solid black;">
+                                                    Right
+                                                </td>
+                                            </tr>
+                                            @foreach (var contitem in subitem.ContinuousItems)
+                                            {
+                                                <tr>
+                                                    <td style="text-align:center; border:1px solid black;">
+                                                        @Html.DisplayFor(modelItem => contitem.StockNo)
+                                                    </td>
+                                                    <td style="text-align:center; border:1px solid black;">
+                                                        @Html.DisplayFor(modelItem => contitem.StockWeight)
+                                                    </td>
+                                                    <td style="text-align:center; border:1px solid black;">
+                                                        @Html.DisplayFor(modelItem => contitem.StockColor)
+                                                    </td>
+                                                    <td style="text-align:center; border:1px solid black;">
+                                                        @Html.DisplayFor(modelItem => contitem.StockGrade)
+                                                    </td>
+                                                    <td style="text-align:center; border:1px solid black;">
+                                                        @Html.DisplayFor(modelItem => contitem.StockSize)
+                                                    </td>
+                                                    <td style="text-align:center; border:1px solid black;">
+                                                        @Html.DisplayFor(modelItem => contitem.Ink1st)
+                                                    </td>
+                                                    <td style="text-align:center; border:1px solid black;">
+                                                        @Html.DisplayFor(modelItem => contitem.Ink2nd)
+                                                    </td>
+                                                    <td style="text-align:center; border:1px solid black;">
+                                                        @Html.DisplayFor(modelItem => contitem.Ink3rd)
+                                                    </td>
+                                                    <td style="text-align:center; border:1px solid black;">
+                                                        @Html.DisplayFor(modelItem => contitem.PolyPlate)
+                                                    </td>
+                                                    <td style="text-align:center; border:1px solid black;">
+                                                        @Html.DisplayFor(modelItem => contitem.FCChg)
+                                                    </td>
+                                                    <td style="text-align:center; border:1px solid black;">
+                                                        @Html.DisplayFor(modelItem => contitem.FCSame)
+                                                    </td>
+                                                    <td style="text-align:center; border:1px solid black;">
+                                                        @Html.DisplayFor(modelItem => contitem.MargLeft)
+                                                    </td>
+                                                    <td style="text-align:center; border:1px solid black;">
+                                                        @Html.DisplayFor(modelItem => contitem.MargRight)
+                                                    </td>
+                                                    <td style="text-align:center; border:1px solid black;">
+                                                        @Html.DisplayFor(modelItem => contitem.SpecPerfs)
+                                                    </td>
+                                                    <td style="text-align:center; border:1px solid black;">
+                                                        @Html.DisplayFor(modelItem => contitem.MargWords)
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border:0px solid transparent;"></td>
+                                    <td style="border:0px solid transparent;" colspan="5">
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <td class="table_header" style="border:0px solid transparent;">
+                                                    Rec All
+                                                </td>
+                                                <td class="table_header" style="border:0px solid transparent;">
+                                                    Rec Partial
+                                                </td>
+                                                <td class="table_header" style="border:0px solid transparent;">
+                                                    Date/Time
+                                                </td>
+                                                <td class="table_header" style="border:0px solid transparent;">
+                                                    Qty Rec
+                                                </td>
+                                                <td class="table_header" style="border:0px solid transparent;">
+                                                    Checked By
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border:0px solid transparent;">
+                                                    <label><input type="checkbox" value="" checked="@subitem.Received" /></label>
+                                                </td>
+                                                <td style="border:0px solid transparent;">
+                                                    <label><input type="checkbox" value="" checked="@subitem.PartialReceived" /></label>
+                                                </td>
+                                                <td style="border:0px solid transparent;">
+                                                    @Html.DisplayFor(modelItem => subitem.DateReceived)
+                                                </td>
+                                                <td style="border:0px solid transparent;">
+                                                    @Html.DisplayFor(modelItem => subitem.QtyReceived)
+                                                </td>
+                                                <td style="border:0px solid transparent;">
+                                                    @Html.DisplayFor(modelItem => subitem.CheckedBy)
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                </div>
+            }
+            else if (item.POType == 3)
+            {
+                if (item.SupplyItems != null)
+                {
+                    <div class="row">
+                        <div class="col-lg-10 col-md-12">
+                            <table class="table">
+                                <tr>
+                                    <th>
+                                        Item No
+                                    </th>
+                                    <th>
+                                        Ordered
+                                    </th>
+                                    <th>
+                                        Description
+                                    </th>
+                                    <th>
+                                        Freight
+                                    </th>
+                                    <th>
+                                        Tax
+                                    </th>
+                                    <th>
+                                        Ext(Quoted)
+                                    </th>
+                                </tr>
+                                @foreach (var subitem in item.SupplyItems)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => subitem.ItemNo)
+                                        </td>
+                                        <td>
+                                            @if (subitem.UnitsOrdered == null)
+                                            {
+                                                @Html.DisplayFor(modelItem => subitem.UnitsSold)
+                                            }
+                                            else
+                                            {
+                                                @Html.DisplayFor(modelItem => subitem.UnitsOrdered)
+                                            }
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => subitem.ProductName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => subitem.Freight)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => subitem.TaxValue)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => subitem.Extensionq)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:0px solid transparent;"></td>
+                                        <td style="border:0px solid transparent;" colspan="5">
+                                            <table style="width:100%;">
+                                                <tr>
+                                                    <td class="table_header" style="border:0px solid transparent;">
+                                                        Rec All
+                                                    </td>
+                                                    <td class="table_header" style="border:0px solid transparent;">
+                                                        Rec Partial
+                                                    </td>
+                                                    <td class="table_header" style="border:0px solid transparent;">
+                                                        Date/Time
+                                                    </td>
+                                                    <td class="table_header" style="border:0px solid transparent;">
+                                                        Qty Rec
+                                                    </td>
+                                                    <td class="table_header" style="border:0px solid transparent;">
+                                                        Checked By
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="border:0px solid transparent;">
+                                                        <label><input type="checkbox" checked="@subitem.Received" /></label>
+                                                    </td>
+                                                    <td style="border:0px solid transparent;">
+                                                        <label><input type="checkbox" checked="@subitem.PartialReceived.Value" /></label>
+                                                    </td>
+                                                    <td style="border:0px solid transparent;">
+                                                        @Html.DisplayFor(modelItem => subitem.DateReceived)
+                                                    </td>
+                                                    <td style="border:0px solid transparent;">
+                                                        @Html.DisplayFor(modelItem => subitem.QtyReceived)
+                                                    </td>
+                                                    <td style="border:0px solid transparent;">
+                                                        @Html.DisplayFor(modelItem => subitem.CheckedBy)
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+                                <tr>
+                                    <td colspan="5" style="text-align:right;">
+                                        Total:
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SupplyTotal, new { htmlAttributes = new { @class = "form-control" } })
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="row">
+                    <div class="col-lg-10 col-md-12">
+                        <table class="table">
+                            <tr>
+                                <th>
+                                    Item No
+                                </th>
+                                <th>
+                                    Ordered
+                                </th>
+                                <th>
+                                    Description
+                                </th>
+                                <th>
+                                    Unit Cost
+                                </th>
+                                <th>
+                                    Per
+                                </th>
+                                <th>
+                                    Extension
+                                </th>
+                            </tr>
+                            @foreach (var subitem in item.PurchaseOrderItems)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => subitem.ItemNo)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => subitem.Quantity)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => subitem.ItemDescription)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => subitem.UnitCost)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => subitem.PricePerUnit)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => subitem.Extensionq)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border:0px solid transparent;"></td>
+                                    <td style="border:0px solid transparent;" colspan="5">
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <td class="table_header" style="border:0px solid transparent;">
+                                                    Rec All
+                                                </td>
+                                                <td class="table_header" style="border:0px solid transparent;">
+                                                    Rec Partial
+                                                </td>
+                                                <td class="table_header" style="border:0px solid transparent;">
+                                                    Date/Time
+                                                </td>
+                                                <td class="table_header" style="border:0px solid transparent;">
+                                                    Qty Rec
+                                                </td>
+                                                <td class="table_header" style="border:0px solid transparent;">
+                                                    Checked By
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border:0px solid transparent;">
+                                                    <label><input type="checkbox" value="" checked="@subitem.Received" /></label>
+                                                </td>
+                                                <td style="border:0px solid transparent;">
+                                                    <label><input type="checkbox" value="" checked="@subitem.PartialReceived" /></label>
+                                                </td>
+                                                <td style="border:0px solid transparent;">
+                                                    @Html.DisplayFor(modelItem => subitem.DateReceived)
+                                                </td>
+                                                <td style="border:0px solid transparent;">
+                                                    @Html.DisplayFor(modelItem => subitem.QtyReceived)
+                                                </td>
+                                                <td style="border:0px solid transparent;">
+                                                    @Html.DisplayFor(modelItem => subitem.CheckedBy)
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td colspan="5" style="text-align:right;">
+                                    Total:
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Total, new { htmlAttributes = new { @class = "form-control" } })
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            }
+        </div>
+        <br />
+    }
+}
+else
+{
+    <div>
+        @Html.ActionLink("Sales Order", "Order", "Sales", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Purchase Order", "Order", "Purchase", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Shipping Order", "Order", "Shipping", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Election Order", "Order", "Election", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+    </div>
+
+    <br />
+
+    <div>
+        @Html.ActionLink("Add Purchase Order", "Add", "Purchase", new { so = ViewBag.SalesOrder }, new { @class = "link_small" })
+    </div>
+
+    <div class="row">
+        <h2 style="text-align:center;"> Purchase Order </h2>
+    </div>
+}
+
+@section scripts{
+    <script type="text/javascript">
+        var EditPurchaseOrder = function (id) {
+            console.log($("#item_PONumber_" + id).val());
+            //console.log(id);
+            window.location.replace("../Purchase/Edit?po=" + $("#item_PONumber_" + id).val());
+        };
+    </script>
+}

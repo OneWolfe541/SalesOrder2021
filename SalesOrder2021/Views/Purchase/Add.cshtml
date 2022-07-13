@@ -1,0 +1,39 @@
+﻿
+@{
+    ViewBag.Title = "Add";
+}
+
+<h2>Add Purchase Order</h2>
+
+<div class="row">
+    <div class="col-md-3">
+        <input id="SalesOrder" name="SalesOrder" type="hidden" value="@ViewBag.SalesOrder" />
+        Type
+        @Html.DropDownList("PurchaseOrderType", (IEnumerable<SelectListItem>)ViewBag.POTypeList, null, new { @class = "form-control" })
+    </div>
+    <div class="col-md-2">
+        &nbsp;
+        <a id="btnGo" href="#" class="btn btn-success" onclick="AddPurchaseOrder()" style="font-size:20px; padding-top:2px; padding-bottom:2px;">Create Purchase Order</a>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        var applicationRoot = function () {
+            var appFolders = window.location.pathname.split('/');
+            return window.location.origin + "/" + appFolders[1];
+        }
+
+        var AddPurchaseOrder = function () {
+            if ($('#PurchaseOrderType').val() === '') {
+                console.log("No value selected");
+            }
+            else {
+                console.log($("#SalesOrder").val());
+                console.log($("#PurchaseOrderType").val());
+                window.location.replace("../Purchase/Create?so=" + $("#SalesOrder").val() + "&type=" + $("#PurchaseOrderType").val());
+            }
+        };
+    </script>
+}
+

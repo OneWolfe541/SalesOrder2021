@@ -1,0 +1,311 @@
+﻿@model SalesOrder2021.Models.BallotOrderDetails
+
+@{
+    ViewBag.Title = "Ballot Order";
+}
+
+<style>
+    .table_header {
+        border: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_subheader {
+        border-bottom: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_content {
+        border: 1px solid black;
+        text-align: center;
+        vertical-align: top;
+        padding: 5px;
+    }
+
+    .table_content_large {
+        border: 1px solid black;
+        text-align: center;
+        font-size: 24px;
+        padding: 10px;
+    }
+</style>
+
+@if (Model != null)
+{
+    <h2>Ballot Order Edit: @Html.DisplayFor(model => model.BallotOrderNo)</h2>
+
+    <div class="form-horizontal">
+        @using (Html.BeginForm("UpdateBallotOrder", "Ballot", FormMethod.Post, new { id = "BallotOrderForm" }))
+        {
+            @Html.HiddenFor(model => model.ElectionOrderNo)
+            @Html.HiddenFor(model => model.BallotOrderNo)
+
+            <div class="row">
+                <div class="col-md-2">
+                    Date Of Entry
+                    @Html.EditorFor(model => model.EntryDate, new { htmlAttributes = new { @class = "form-control datepicker", onchange = "UpdateBallotOrder()" } })
+                </div>
+                <div class="col-md-3">
+                    Entered By
+                    @Html.DropDownListFor(model => model.AESContactID, (IEnumerable<SelectListItem>)ViewBag.EmployeeList, null, new { @class = "form-control", @onchange = "UpdateBallotOrder()", disabled = "disabled" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    Ballot Order Type
+                    @Html.DropDownListFor(model => model.OrderTypeID, (IEnumerable<SelectListItem>)ViewBag.OrderTypesList, " ", new { @class = "form-control", @onchange = "UpdateBallotOrder()" })
+                </div>
+                <div class="col-md-3">
+                    Ballot Order Name
+                    @Html.EditorFor(model => model.BallotOrderName, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateBallotOrder()" } })
+                </div>
+                <div class="col-md-6">
+                    Special Instructions
+                    @Html.EditorFor(model => model.BOInstructions, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateBallotOrder()", style = "max-width:620px;" } })
+                </div>
+            </div>
+
+            <br />
+
+            if (Model.BallotDistricts != null && Model.BallotDistricts.Count() > 0)
+            {
+                foreach (var item in Model.BallotDistricts)
+                {
+                    <div class="row">
+                        <p><b>Ballot Style</b></p>
+                        <div class="col-md-1">
+                            @Html.HiddenFor(modelItem => item.BallotStyleID)
+                            Index
+                            @Html.EditorFor(modelItem => item.StyleIndex, new { htmlAttributes = new { @class = "form-control", id = string.Format("item_StyleIndex_{0}", item.BallotStyleID), onblur = string.Format("UpdateStyleItem({0})", item.BallotStyleID), style = "max-width:620px;" } })
+                        </div>
+                        <div class="col-md-3">
+                            Ballot Style Name 1
+                            @Html.EditorFor(modelItem => item.StyleName1, new { htmlAttributes = new { @class = "form-control", id = string.Format("item_StyleName1_{0}", item.BallotStyleID), onblur = string.Format("UpdateStyleItem({0})", item.BallotStyleID), style = "max-width:620px;" } })
+                        </div>
+                        <div class="col-md-3">
+                            Ballot Style Name 2
+                            @Html.EditorFor(modelItem => item.StyleName2, new { htmlAttributes = new { @class = "form-control", id = string.Format("item_StyleName2_{0}", item.BallotStyleID), onblur = string.Format("UpdateStyleItem({0})", item.BallotStyleID), style = "max-width:620px;" } })
+                        </div>
+                        <div class="col-md-1" style="min-width:100px;">
+                            Add Color<br />
+                            @Html.CheckBoxFor(modelItem => item.AddColors, new { htmlAttributes = new { @class = "form-control", style = "max-width:620px;" }, id = string.Format("item_AddColors_{0}", item.BallotStyleID), onchange = string.Format("UpdateStyleItem({0})", item.BallotStyleID) })
+                        </div>
+                        <div class="col-md-2">
+                            Ballot Style Color
+                            @Html.EditorFor(modelItem => item.StyleColor, new { htmlAttributes = new { @class = "form-control", id = string.Format("item_StyleColor_{0}", item.BallotStyleID), onblur = string.Format("UpdateStyleItem({0})", item.BallotStyleID), style = "max-width:620px;" } })
+                        </div>
+                        <div class="col-md-1">
+                            Sides<br />
+                            @Html.CheckBoxFor(modelItem => item.TwoSides, new { htmlAttributes = new { @class = "form-control", style = "max-width:620px;" }, id = string.Format("item_TwoSides_{0}", item.BallotStyleID), onchange = string.Format("UpdateStyleItem({0})", item.BallotStyleID) })
+                        </div>
+                    </div>
+                    <br />
+                    <p><b>Ballot Details</b></p>
+                    <div class="row" style="border:1px solid gray; padding:12px 7px 12px 50px; margin-right:10px;">
+                        @if (item.StyleDetails != null && item.StyleDetails.Count() > 0)
+                        {
+                            foreach (var subitem in item.StyleDetails)
+                            {
+                                <div class="row">
+                                    <div class="col-md-1">
+                                        @Html.HiddenFor(modelItem => subitem.BallotDetailID)
+                                        Index
+                                        @Html.EditorFor(modelItem => subitem.BallotIndex, new { htmlAttributes = new { @class = "form-control", id = string.Format("subitem_StyleIndex_{0}", subitem.BallotDetailID), onblur = string.Format("UpdateBallotItem({0})", subitem.BallotDetailID), style = "max-width:620px;" } })
+                                    </div>
+                                    <div class="col-md-1" style="min-width:110px; display:none;">
+                                        Ballot Style
+                                        @Html.EditorFor(modelItem => subitem.BallotStyleID, new { htmlAttributes = new { @class = "form-control", id = string.Format("subitem_BallotStyleID_{0}", subitem.BallotDetailID), onblur = string.Format("UpdateBallotItem({0})", subitem.BallotDetailID), style = "max-width:620px;", disabled = "disabled" } })
+                                    </div>
+                                    <div class="col-md-2" style="min-width:110px;">
+                                        Quantity
+                                        @Html.EditorFor(modelItem => subitem.Quantity, new { htmlAttributes = new { @class = "form-control", id = string.Format("subitem_Quantity_{0}", subitem.BallotDetailID), onblur = string.Format("UpdateBallotItem({0})", subitem.BallotDetailID), style = "max-width:620px;" } })
+                                    </div>
+                                    <div class="col-md-3">
+                                        Voting/Function
+                                        @Html.DropDownListFor(modelItem => subitem.VotingTypeID, new SelectList(ViewBag.VotingTypesList, "Value", "Text", subitem.VotingTypeID), null, new { @class = "form-control", id = string.Format("subitem_VotingTypeID_{0}", subitem.BallotDetailID), @onchange = string.Format("UpdateBallotItem({0})", subitem.BallotDetailID), style = "max-width:620px;" })
+                                    </div>
+                                    <div class="col-md-2">
+                                        Start No
+                                        @Html.EditorFor(modelItem => subitem.StartNo, new { htmlAttributes = new { @class = "form-control", id = string.Format("subitem_StartNo_{0}", subitem.BallotDetailID), onblur = string.Format("UpdateBallotItem({0})", subitem.BallotDetailID), style = "max-width:620px;" } })
+                                    </div>
+                                    <div class="col-md-2">
+                                        End No
+                                        @Html.EditorFor(modelItem => subitem.EndNo, new { htmlAttributes = new { @class = "form-control", id = string.Format("subitem_EndNo_{0}", subitem.BallotDetailID), onblur = string.Format("UpdateBallotItem({0})", subitem.BallotDetailID), style = "max-width:620px;" } })
+                                    </div>
+                                </div>
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-2" style="min-width:175px;">
+                                        <b>Prepress Production</b>
+                                    </div>
+                                    <div class="col-md-3">
+                                        Ballot Type
+                                        @Html.DropDownListFor(modelItem => subitem.BallotTypeID, new SelectList(ViewBag.BallotTypesList, "Value", "Text", subitem.BallotTypeID), " ", new { @class = "form-control", id = string.Format("subitem_BallotTypeID_{0}", subitem.BallotDetailID), @onchange = string.Format("UpdateBallotWidthList({0})", subitem.BallotDetailID), style = "max-width:620px;" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        Ballot Width
+                                        @Html.DropDownListFor(modelItem => subitem.BallotSize, new SelectList(((List<SalesOrder2021.Models.tblBallotSizes>)ViewBag.BallotSizeList).Where(s => s.BallotTypeID == subitem.BallotTypeID).Select(b => new { OpSizeID = b.OpSizeID, SizeDesc = b.SizeDesc + " - " + b.Width.ToString().TrimEnd('0').TrimEnd('.') + " x " + b.length.ToString().TrimEnd('0').TrimEnd('.') }), "OpSizeID", "SizeDesc", subitem.BallotSize), " ", new { @class = "form-control", id = string.Format("subitem_BallotSize_{0}", subitem.BallotDetailID), @onchange = string.Format("UpdateBallotItem({0})", subitem.BallotDetailID), style = "max-width:620px;" })
+                                    </div>
+                                    <div class="col-md-1" style="min-width:100px;">
+                                        Right HC
+                                        @Html.EditorFor(modelItem => subitem.RightHeaderCode, new { htmlAttributes = new { @class = "form-control", id = string.Format("subitem_RightHeaderCode_{0}", subitem.BallotDetailID), onblur = string.Format("UpdateBallotItem({0})", subitem.BallotDetailID), style = "max-width:620px;" } })
+                                    </div>
+                                    <div class="col-md-1" style="min-width:120px;">
+                                        PDF Page No
+                                        @Html.EditorFor(modelItem => subitem.PDFPage, new { htmlAttributes = new { @class = "form-control", id = string.Format("subitem_PDFPage_{0}", subitem.BallotDetailID), onblur = string.Format("UpdateBallotItem({0})", subitem.BallotDetailID), style = "max-width:620px;" } })
+                                    </div>
+                                </div>
+                                <hr />
+                            }
+                        }
+                        <div class="row">
+                            <div class="col-md-2">
+                                @Html.ActionLink("Add Ballot", "AddBallotItem", "Ballot", new { bo = Model.BallotOrderNo, bs = item.BallotStyleID }, new { @class = "link_small" })
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                }
+            }
+            <div class="row">
+                <div class="col-md-2">
+                    <br />
+                    @Html.ActionLink("Add Ballot Style", "AddStyleItem", "Ballot", new { bo = Model.BallotOrderNo }, new { @class = "link_small" })
+                </div>
+            </div>
+
+        }
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-3 pull-right" style="text-align:right;">
+            @Html.ActionLink("Done", "Order", "Ballot", new { eo = Model.ElectionOrderNo }, new { @class = "btn btn-success link_small" })
+        </div>
+    </div>
+}
+
+@section scripts{
+    <script type="text/javascript">
+        $(function () { // will trigger when the document is ready
+            $('.datepicker').datepicker(); //Initialise any date pickers
+        });
+
+        var applicationRoot = function () {
+            var appFolders = window.location.pathname.split('/');
+            return window.location.origin + "/" + appFolders[1];
+        }
+
+        var UpdateBallotOrder = function () {
+            //console.log($("#BallotOrderForm").serialize());
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Ballot/UpdateBallotOrder",
+                data: $("#BallotOrderForm").serialize(),
+                dataType: "json",
+                success: function (result) {
+
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Election Order did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var UpdateStyleItem = function (id) {
+            console.log(id);
+
+            //console.log($("#item_AddColors_" + id));
+
+            var styleItem = {
+                BallotStyleID: id,
+                StyleIndex: $("#item_StyleIndex_" + id).val(),
+                StyleName1: $("#item_StyleName1_" + id).val(),
+                StyleName2: $("#item_StyleName2_" + id).val(),
+                AddColors: $("#item_AddColors_" + id).is(":checked"),
+                StyleColor: $("#item_StyleColor_" + id).val(),
+                TwoSides: $("#item_TwoSides_" + id).is(":checked")
+            };
+            console.log(styleItem);
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Ballot/UpdateStyleItem",
+                data: styleItem,
+                dataType: "json",
+                success: function (result) {
+
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Ballot style did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var UpdateBallotItem = function (id) {
+            console.log(id);
+
+            var ballotItem = {
+                BallotDetailID: id,
+                BallotIndex: $("#subitem_StyleIndex_" + id).val(),
+                BallotStyleID: $("#subitem_BallotStyleID_" + id).val(),
+                Quantity: $("#subitem_Quantity_" + id).val(),
+                VotingTypeID: $("#subitem_VotingTypeID_" + id).val(),
+                StartNo: $("#subitem_StartNo_" + id).val(),
+                BallotTypeID: $("#subitem_BallotTypeID_" + id).val(),
+                BallotSize: $("#subitem_BallotSize_" + id).val(),
+                RightHeaderCode: $("#subitem_RightHeaderCode_" + id).val(),
+                PDFPage: $("#subitem_PDFPage_" + id).val()
+            };
+            console.log(ballotItem);
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Ballot/UpdateBallotItem",
+                data: ballotItem,
+                dataType: "json",
+                success: function (result) {
+
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Ballot style did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var UpdateBallotWidthList = function (id) {
+            console.log($("#subitem_BallotTypeID_" + id).val());
+            var root = applicationRoot();
+            $.ajax({
+                url: root + "/Ballot/FilteredBallotWidths",
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    id: $("#subitem_BallotTypeID_" + id).val()
+                },
+                success: function (response) {
+                    $("#subitem_BallotSize_" + id).html('');
+                    //console.log(response);
+                    $.each(response, function (index, item) {
+                        //console.log(item);
+                        $('#subitem_BallotSize_' + id)
+                            .append($('<option>', { value: item.Value })
+                                .text(item.Text));
+                    });
+                    UpdateBallotItem(id);
+                }
+            });            
+        };
+    </script>
+}

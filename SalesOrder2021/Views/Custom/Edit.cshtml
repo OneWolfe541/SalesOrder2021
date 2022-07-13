@@ -1,0 +1,260 @@
+﻿@model SalesOrder2021.Models.CustomOrderDetails
+
+@{
+    ViewBag.Title = "Supply Order";
+}
+
+<style>
+    .table_header {
+        border: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_subheader {
+        border-bottom: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_content {
+        border: 1px solid black;
+        text-align: center;
+        vertical-align: top;
+        padding: 5px;
+    }
+
+    .table_content_large {
+        border: 1px solid black;
+        text-align: center;
+        font-size: 24px;
+        padding: 10px;
+    }
+</style>
+
+@if (Model != null)
+{
+    <h2>Custom Order Edit: @Html.DisplayFor(model => model.CustomOrderID)</h2>
+
+    <div class="form-horizontal">
+        @using (Html.BeginForm("UpdateCustomOrder", "Custom", FormMethod.Post, new { id = "CustomOrderForm" }))
+        {
+            @Html.HiddenFor(model => model.CustomOrderID)
+            @Html.HiddenFor(model => model.ElectionOrderNo)
+
+            <div class="row">
+                <div class="col-md-2">
+                    Date Of Entry
+                    @Html.EditorFor(model => model.EntryDate, new { htmlAttributes = new { @class = "form-control datepicker", onchange = "UpdateCustomOrder()" } })
+                </div>
+                <div class="col-md-3">
+                    Entered By
+                    @Html.DropDownListFor(model => model.AESContactID, (IEnumerable<SelectListItem>)ViewBag.EmployeeList, null, new { @class = "form-control", @onchange = "UpdateCustomOrder()", disabled = "disabled" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    Custom Supply
+                    @Html.DropDownListFor(model => model.CustomSupplyID, (IEnumerable<SelectListItem>)ViewBag.CustomSupplyList, " ", new { @class = "form-control", @onchange = "UpdateCustomOrder()" })
+                </div>
+                <div class="col-md-3">
+                    Completion Date
+                    @Html.EditorFor(model => model.DueDate, new { htmlAttributes = new { @class = "form-control datepicker", onchange = "UpdateCustomOrder()" } })
+                </div>
+                <div class="col-md-6">
+                    Instructions
+                    @Html.EditorFor(model => model.COInstructions, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateCustomOrder()", style = "max-width:620px;" } })
+                </div>
+            </div>
+
+            <br />
+
+            if (Model.CustomItems != null && Model.CustomItems.Count() > 0)
+            {
+                foreach (var item in Model.CustomItems)
+                {
+                    <div class="row">
+                        <div class="col-md-3">
+                            @Html.HiddenFor(modelItem => item.CustomItemOrderID)
+                            Custom Item
+                            @Html.DropDownListFor(modelItem => item.CustomItemID, new SelectList(ViewBag.CustomItemList, "Value", "Text", item.CustomItemID), " ", new { @class = "form-control", id = string.Format("item_CustomItemID_{0}", item.CustomItemOrderID), @onchange = string.Format("UpdateCustomItem({0})", item.CustomItemOrderID), style = "max-width:620px;" })
+                        </div>
+                        <div class="col-md-2">
+                            Quantity
+                            @Html.EditorFor(modelItem => item.Quantity, new { htmlAttributes = new { @class = "form-control", id = string.Format("item_Quantity_{0}", item.CustomItemOrderID), onblur = string.Format("UpdateCustomItem({0})", item.CustomItemOrderID), style = "max-width:620px;" } })
+                        </div>
+                        <div class="col-md-1">
+                            Size
+                            @Html.EditorFor(modelItem => item.pSize, new { htmlAttributes = new { @class = "form-control", id = string.Format("item_pSize_{0}", item.CustomItemOrderID), onblur = string.Format("UpdateCustomItem({0})", item.CustomItemOrderID), style = "max-width:620px;" } })
+                        </div>
+                        <div class="col-md-1">
+                            Sides
+                            @Html.EditorFor(modelItem => item.Sides, new { htmlAttributes = new { @class = "form-control", id = string.Format("item_Sides_{0}", item.CustomItemOrderID), onblur = string.Format("UpdateCustomItem({0})", item.CustomItemOrderID), style = "max-width:620px;" } })
+                        </div>
+                        <div class="col-md-2">
+                            NCR Parts
+                            @Html.EditorFor(modelItem => item.Parts, new { htmlAttributes = new { @class = "form-control", id = string.Format("item_Parts_{0}", item.CustomItemOrderID), onblur = string.Format("UpdateCustomItem({0})", item.CustomItemOrderID), style = "max-width:620px;" } })
+                        </div>
+                        <div class="col-md-2">
+                            Ink Colors
+                            @Html.EditorFor(modelItem => item.Colors, new { htmlAttributes = new { @class = "form-control", id = string.Format("item_Colors_{0}", item.CustomItemOrderID), onblur = string.Format("UpdateCustomItem({0})", item.CustomItemOrderID), style = "max-width:620px;" } })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+
+                        </div>
+                        <div class="col-md-1" style="width:100px;">
+                            <label style="font-weight:500;">
+                                @Html.CheckBoxFor(modelItem => item.Permit, new { htmlAttributes = new { @class = "form-control", style = "max-width:620px;" }, id = string.Format("item_Permit_{0}", item.CustomItemOrderID), onchange = string.Format("UpdateCustomItem({0})", item.CustomItemOrderID) })
+                                Permit
+                            </label>
+                        </div>
+                        <div class="col-md-1" style="width:150px;">
+                            <label style="font-weight:500;">
+                                @Html.CheckBoxFor(modelItem => item.AESIndicia, new { htmlAttributes = new { @class = "form-control", style = "max-width:620px;" }, id = string.Format("item_AESIndicia_{0}", item.CustomItemOrderID), onchange = string.Format("UpdateCustomItem({0})", item.CustomItemOrderID) })
+                                AES Indicia
+                            </label>
+                        </div>
+                        <div class="col-md-1" style="width:150px;">
+                            <label style="font-weight:500;">
+                                @Html.CheckBoxFor(modelItem => item.Courtesy, new { htmlAttributes = new { @class = "form-control", style = "max-width:620px;" }, id = string.Format("item_Courtesy_{0}", item.CustomItemOrderID), onchange = string.Format("UpdateCustomItem({0})", item.CustomItemOrderID) })
+                                Courtesy Reply
+                            </label>
+                        </div>
+                        <div class="col-md-1" style="width:120px;">
+                            <label style="font-weight:500;">
+                                @Html.CheckBoxFor(modelItem => item.TickMarks, new { htmlAttributes = new { @class = "form-control", style = "max-width:620px;" }, id = string.Format("item_TickMarks_{0}", item.CustomItemOrderID), onchange = string.Format("UpdateCustomItem({0})", item.CustomItemOrderID) })
+                                Tick Marks
+                            </label>
+                        </div>
+                        <div class="col-md-2">
+                            Item Status
+                            @Html.DropDownListFor(modelItem => item.ItemStatusID, new SelectList(ViewBag.ItemStatusList, "Value", "Text", item.ItemStatusID), " ", new { @class = "form-control", id = string.Format("item_ItemStatusID_{0}", item.CustomItemOrderID), @onchange = string.Format("UpdateCustomItem({0})", item.CustomItemOrderID), style = "max-width:620px;" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+
+                        </div>
+                        <div class="col-md-1" style="width:100px;">
+                            <label style="font-weight:500;">
+                                @Html.CheckBoxFor(modelItem => item.Metered, new { htmlAttributes = new { @class = "form-control", style = "max-width:620px;" }, id = string.Format("item_Metered_{0}", item.CustomItemOrderID), onchange = string.Format("UpdateCustomItem({0})", item.CustomItemOrderID) })
+                                Metered
+                            </label>
+                        </div>
+                        <div class="col-md-1" style="width:150px;">
+                            <label style="font-weight:500;">
+                                @Html.CheckBoxFor(modelItem => item.QBRM, new { htmlAttributes = new { @class = "form-control", style = "max-width:620px;" }, id = string.Format("item_QBRM_{0}", item.CustomItemOrderID), onchange = string.Format("UpdateCustomItem({0})", item.CustomItemOrderID) })
+                                QBRM and Test
+                            </label>
+                        </div>
+                        <div class="col-md-1" style="width:150px;">
+                            <label style="font-weight:500;">
+                                @Html.CheckBoxFor(modelItem => item.Graphics, new { htmlAttributes = new { @class = "form-control", style = "max-width:620px;" }, id = string.Format("item_Graphics_{0}", item.CustomItemOrderID), onchange = string.Format("UpdateCustomItem({0})", item.CustomItemOrderID) })
+                                Logo/Graphics
+                            </label>
+                        </div>
+                        <div class="col-md-1" style="width:120px;">
+                            <label style="font-weight:500;">
+                                @Html.CheckBoxFor(modelItem => item.DrillMarks, new { htmlAttributes = new { @class = "form-control", style = "max-width:620px;" }, id = string.Format("item_DrillMarks_{0}", item.CustomItemOrderID), onchange = string.Format("UpdateCustomItem({0})", item.CustomItemOrderID) })
+                                Drill Marks
+                            </label>
+                        </div>
+                    </div>
+
+                    <hr />
+                }
+            }
+            <div class="row">
+                <div class="col-md-2">
+                    @Html.ActionLink("Add Custom", "AddCustomItem", "Custom", new { co = Model.CustomOrderID }, new { @class = "link_small" })
+                </div>
+            </div>
+        }
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-3 pull-right" style="text-align:right;">
+            @Html.ActionLink("Done", "Order", "Custom", new { eo = Model.ElectionOrderNo }, new { @class = "btn btn-success link_small" })
+        </div>
+    </div>
+}
+else
+{
+
+}
+
+@section scripts{
+    <script type="text/javascript">
+        $(function () { // will trigger when the document is ready
+            $('.datepicker').datepicker(); //Initialise any date pickers
+        });
+
+        var applicationRoot = function () {
+            var appFolders = window.location.pathname.split('/');
+            return window.location.origin + "/" + appFolders[1];
+        }
+
+        var UpdateCustomOrder = function () {
+            console.log($("#CustomOrderForm").serialize());
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Custom/UpdateCustomOrder",
+                data: $("#CustomOrderForm").serialize(),
+                dataType: "json",
+                success: function (result) {
+
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Custom Order did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var UpdateCustomItem = function (id) {
+            console.log(id);
+
+            var customItem = {
+                CustomItemOrderID: id,
+                CustomItemID: $("#item_CustomItemID_" + id).val(),
+                Quantity: $("#item_Quantity_" + id).val(),
+                pSize: $("#item_pSize_" + id).val(),
+                Sides: $("#item_Sides_" + id).val(),
+                Parts: $("#item_Parts_" + id).val(),
+                Colors: $("#item_Colors_" + id).val(),
+                Permit: $("#item_Permit_" + id).is(":checked"),
+                AESIndicia: $("#item_AESIndicia_" + id).is(":checked"),
+                Courtesy: $("#item_Courtesy_" + id).is(":checked"),
+                TickMarks: $("#item_TickMarks_" + id).is(":checked"),
+                ItemStatusID: $("#item_ItemStatusID_" + id).val(),
+                Metered: $("#item_Metered_" + id).is(":checked"),
+                QBRM: $("#item_QBRM_" + id).is(":checked"),
+                Graphics: $("#item_Graphics_" + id).is(":checked"),
+                DrillMarks: $("#item_DrillMarks_" + id).is(":checked")
+            };
+            console.log(customItem);
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Custom/UpdateCustomItem",
+                data: customItem,
+                dataType: "json",
+                success: function (result) {
+
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Custom item did not save correctly.");
+                    }
+                }
+            });
+        };
+    </script>
+}
+

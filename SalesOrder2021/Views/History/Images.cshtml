@@ -1,0 +1,255 @@
+﻿@model SalesOrder2021.Models.ElectionOrderDetails
+
+@{
+    /**/
+
+    ViewBag.Title = "Ballot Images";
+}
+
+<style>
+    .table_header {
+        border: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_subheader {
+        border-bottom: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_content {
+        border: 1px solid black;
+        text-align: center;
+        vertical-align: top;
+        padding: 5px;
+    }
+
+    .table_content_large {
+        border: 1px solid black;
+        text-align: center;
+        font-size: 24px;
+        padding: 10px;
+    }
+</style>
+
+<br />
+
+@if (Model != null)
+{
+    <div class="col-lg-10 col-md-12">
+        @Html.ActionLink("Sales Order", "Order", "Sales", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Election Order", "Order", "Election", new { eo = Model.ElectionOrderNo }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Ballot Order", "Order", "Ballot", new { eo = Model.ElectionOrderNo }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Supply Order", "Order", "Supply", new { eo = Model.ElectionOrderNo }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Custom Order", "Order", "Custom", new { eo = Model.ElectionOrderNo }, new { @class = "btn btn-primary link_small" })
+
+        <div class="col-md-1 pull-right" style="margin-right:50px;">
+            @Html.ActionLink("Ballot Images", "Images", "History", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+        </div>
+    </div>
+
+    <div class="col-lg-10 col-md-12">
+        <h2 style="text-align:center;">Ballot Images</h2>
+    </div>
+
+    <div class="form-horizontal">
+        <div class="row">
+            <div class="col-lg-5 col-md-7">
+                <img src='@Url.Content("~/Images/AESslug.png")' width="460" />
+            </div>
+
+            <div class="col-md-5">
+                <table style="width:100%;">
+                    <tr>
+                        <td class="table_header" style="text-align:right; border:0px solid transparent;">
+                            Election Order No
+                        </td>
+                        <td class="table_content" style="border:1px solid black;">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.ElectionOrderNo, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table_header" style="text-align:right; border:0px solid transparent;">
+                            Sales Order No
+                        </td>
+                        <td class="table_content" style="border:1px solid black;">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.SalesOrderNo, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table_header" style="text-align:right; border:0px solid transparent;">
+                            Date of Entry
+                        </td>
+                        <td class="table_content" style="border:1px solid black;">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.EntryDate, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                    </tr>
+                </table>
+                <br />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-10 col-md-12">
+                <table style="width:100%;">
+                    <tr>
+                        <td class="table_header" style="text-align:left; border:0px solid transparent; width:75%;">
+                            Election Title
+                        </td>
+                        <td class="table_header" style="text-align:left; border:0px solid transparent;">
+                            Election Date
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table_content" style="text-align:left; border:1px solid black; width:75%;">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.ElectionTitle, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                        <td class="table_content" style="text-align:left; border:1px solid black;">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.ElectionDate, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                    </tr>
+                </table>
+                <br />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-5 col-md-7">
+                <table style="width:100%;">
+                    <tr>
+                        <td class="table_header">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.CustomerName, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table_content" style="text-align:left;">
+                            &nbsp;Contact:
+                            @Html.DisplayFor(model => model.ContactName, new { htmlAttributes = new { @class = "form-control" } })
+                            &nbsp;Phone:
+                            @Html.DisplayFor(model => model.ContactPhone, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table_content" style="text-align:left;">
+                            &nbsp;Email:
+                            @Html.DisplayFor(model => model.ContactEmail, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                    </tr>
+                </table>
+                <br />
+            </div>
+            <div class="col-md-5">
+                <table style="width:100%;">
+                    <tr>
+                        <td class="table_header" style="text-align:left;">
+                            Polling Place Machine
+                        </td>
+                        <td class="table_content" style="text-align:left;">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.PollingPlace, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table_header" style="text-align:left;">
+                            Absentee Machine
+                        </td>
+                        <td class="table_content" style="text-align:left;">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.Absentee, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table_header" style="text-align:left;">
+                            Early Voting Machine
+                        </td>
+                        <td class="table_content" style="text-align:left;">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.EarlyVoting, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                    </tr>
+                </table>
+                <br />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-5 col-md-7">
+                @if (Model.AltContactName != null)
+                {
+                    <table style="width:100%; border:1px solid black;">
+                        <tr>
+                            <td class="table_content" style="text-align:left;">
+                                &nbsp; Contact:
+                                @Html.DisplayFor(model => model.AltContactName, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left;">
+                                &nbsp;
+                                @Html.DisplayFor(model => model.AltContactPhone, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left;">
+                                &nbsp; Email:
+                                @Html.DisplayFor(model => model.AltContactEmail, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                }
+            </div>
+        </div>
+
+        @if (Model.Ballots != null)
+        {
+            <div class="row">
+                <div class="col-lg-10 col-md-12">
+                    <table style="width:100%;">
+                        <tr>
+                            <td>
+                                Ballot PDFs:
+                            </td>
+                        </tr>
+                        @foreach (var item in Model.Ballots)
+                        {
+                            <tr>
+                                <td>
+                                    <a class="link_small" href="@item.Path">@item.FileName</a>
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div>
+        @Html.ActionLink("Sales Order", "Order", "Sales", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Purchase Order", "Order", "Purchase", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Shipping Order", "Order", "Shipping", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Election Order", "Order", "Election", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+    </div>
+
+    <h2 style="text-align:center;">Ballot Images</h2>
+}
+

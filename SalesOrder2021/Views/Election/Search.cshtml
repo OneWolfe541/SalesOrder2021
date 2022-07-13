@@ -1,0 +1,135 @@
+﻿@model IEnumerable<SalesOrder2021.Models.ElectionOrderSearchDetails>
+
+@{
+    ViewBag.Title = "Search";
+}
+
+<style>
+    .link_small {
+        font-size: 10px;
+        padding: 2px 10px 2px 10px;
+    }
+</style>
+
+<h2>Election Order Search</h2>
+
+<div class="row">
+    <div class="col-md-2">
+        <b>Election Order</b>
+        <input class="form-control text-box single-line" id="EOID" name="EOID" type="text" onblur="FilterEOList()" value="@ViewBag.PONumber" />
+    </div>
+    <div class="col-md-3">
+        <b>Customer Name</b>
+        <input class="form-control text-box single-line" id="CustomerFilter" name="CustomerFilter" type="text" onblur="FilterCustomerList()" value="@ViewBag.CustomerName" />
+        @Html.DropDownList("ElectionCustomer", (IEnumerable<SelectListItem>)ViewBag.CustomerList, "ALL", new { @class = "form-control" })
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-1">
+        <a id="btnGo" href="#" class="btn btn-success" onclick="SearchElectionOrders()" style="font-size:20px; width:100px; padding-top:2px; padding-bottom:2px;">Go</a>
+    </div>
+</div>
+
+<div class="row" style="font-size:14px;">
+    <br />
+    <table align="left" style="width:100%; max-width:1050px;">
+        @if (Model != null)
+        {
+            <tr>
+                <th>
+                    Number
+                </th>
+                <th>
+                    Customer
+                </th>
+                <th>
+                    Date
+                </th>
+                <th>
+                    Title
+                </th>
+            </tr>
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td style="text-align:left; width:80px; border-top:1px solid black;">
+                        <a href="/salesorder/Election/Order?so=@item.SalesOrderNo" data="@item.SalesOrderNo">
+                            @Html.DisplayFor(modelItem => item.ElectionOrderNo)
+                        </a>
+                    </td>
+
+                    <td style="text-align:left; width:300px; white-space:nowrap; text-overflow:ellipsis; overflow:hidden; max-width:1px; border-top:1px solid black;">
+                        <a href="/salesorder/Election/Order?so=@item.SalesOrderNo" data="@item.SalesOrderNo">
+                            @Html.DisplayFor(modelItem => item.CustomerName)
+                        </a>
+                    </td>
+
+                    <td style="text-align:left; width:100px; border-top:1px solid black;">
+                        <a href="/salesorder/Election/Order?so=@item.SalesOrderNo" data="@item.SalesOrderNo">
+                            @Html.DisplayFor(modelItem => item.ElectionDate)
+                        </a>
+                    </td>
+
+                    <td style="text-align:left; white-space:nowrap; width:700px; text-overflow:ellipsis; overflow: hidden; max-width:1px; border-top:1px solid black;">
+                        <a href="/salesorder/Election/Order?so=@item.SalesOrderNo" data="@item.SalesOrderNo">
+                            @Html.DisplayFor(modelItem => item.ElectionTitle)
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td height="2px;" colspan="4" style="font-size:4px;">
+                        &nbsp;
+                    </td>
+                </tr>
+            }
+        }
+    </table>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        var applicationRoot = function () {
+            var appFolders = window.location.pathname.split('/');
+            return window.location.origin + "/" + appFolders[1];
+        }
+
+        // Change page when drop down list is changed
+        var SearchElectionOrders = function () {
+            console.log($("#EOID").val());
+            console.log($("#ElectionCustomer").val());
+            console.log($("#CustomerFilter").val());
+            window.location.replace("../Election/Search?eoid=" + $("#EOID").val() + "&custid=" + $("#ElectionCustomer").val() + "&custname=" + $("#CustomerFilter").val());
+        };
+
+        $('#CustomerFilter').keypress(function (event) {
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+            if (keycode == '13') {
+                FilterCustomerList();
+            }
+        });
+
+        var FilterCustomerList = function () {
+            //console.log($("#CustomerFilter").val());
+            var root = applicationRoot();
+            $.ajax({
+                url: root + "/Election/FilteredCustomers",
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    custname: $("#CustomerFilter").val()
+                },
+                success: function (response) {
+                    $("#ElectionCustomer").html('');
+                    //console.log(response);
+                    $.each(response, function (index, item) {
+                        //console.log(item);
+                        $('#ElectionCustomer')
+                            .append($('<option>', { value: item.Value })
+                                .text(item.Text));
+                    });
+                }
+            });
+        };
+    </script>
+}

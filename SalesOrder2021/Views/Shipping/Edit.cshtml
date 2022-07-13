@@ -1,0 +1,465 @@
+﻿@model SalesOrder2021.Models.ShippingOrderDetails
+
+@{
+    ViewBag.Title = "Bill Of Lading";
+}
+
+<style>
+    .table_header {
+        border: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_subheader {
+        border-bottom: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_content {
+        border: 1px solid black;
+        text-align: center;
+        vertical-align: top;
+        padding: 5px;
+    }
+
+    .table_content_large {
+        border: 1px solid black;
+        text-align: center;
+        font-size: 24px;
+        padding: 10px;
+    }
+</style>
+
+@if (Model != null)
+{
+
+    <h2>Bill Of Lading Edit: @Html.DisplayFor(model => model.LadingID)</h2>
+
+    <div class="form-horizontal">
+        @using (Html.BeginForm("UpdateShippingOrder", "Shipping", FormMethod.Post, new { id = "ShippingOrderForm" }))
+        {
+            @Html.HiddenFor(model => model.LadingID)
+            @Html.HiddenFor(model => model.RecByCust)
+            @Html.HiddenFor(model => model.BLLocked)
+            @Html.HiddenFor(model => model.Misc)
+            <div class="row">
+                <div class="col-md-3">
+                    Entry Date
+                    @Html.EditorFor(model => model.EntryDate, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateShippingOrder()", style = "max-width:620px;" } })
+                </div>
+                <div class="col-md-3">
+                    Entered By
+                    @*@Html.EditorFor(model => model.AESContactID, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateShippingOrder()" } })*@
+                    @Html.DropDownListFor(model => model.AESContactID, (IEnumerable<SelectListItem>)ViewBag.EmployeeList, null, new { @class = "form-control", @onchange = "UpdateShippingOrder()", disabled = "disabled" })
+                </div>
+                <div class="col-md-3">
+                    Sales Order No
+                    @Html.EditorFor(model => model.SalesOrderNo, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateShippingOrder()", disabled = "disabled" } })
+                </div>
+                <div class="col-md-3">
+                    Election Order No
+                    @Html.EditorFor(model => model.ElectionOrderNo, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateShippingOrder()", disabled = "disabled" } })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    Ship To
+                    @*@Html.EditorFor(model => model.CustomerNo, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateShippingOrder()" } })*@
+                    @Html.DropDownListFor(model => model.CustomerNo, (IEnumerable<SelectListItem>)ViewBag.CustomerList, null, new { @class = "form-control dropdown", @onchange = "UpdateShipToAddress()", style = "max-width:620px;" })
+                </div>
+                <div class="col-md-3">
+                    Ship To Address
+                    @*@Html.EditorFor(model => model.ShipAddressID, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateShippingOrder()" } })*@
+                    @Html.DropDownListFor(model => model.ShipAddressID, (IEnumerable<SelectListItem>)ViewBag.CustomerAddressList, null, new { @class = "form-control", @onchange = "UpdateAddressDetails()" })
+                </div>
+                <div class="col-md-3">
+                    Address 2
+                    @Html.EditorFor(model => model.ShipToAddress2, new { htmlAttributes = new { @class = "form-control", disabled = "disabled" } })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    City
+                    @Html.EditorFor(model => model.ShipToCity, new { htmlAttributes = new { @class = "form-control", disabled = "disabled", style = "max-width:620px;" } })
+                </div>
+                <div class="col-md-3">
+                    State
+                    @Html.EditorFor(model => model.ShipToState, new { htmlAttributes = new { @class = "form-control", disabled = "disabled" } })
+                </div>
+                <div class="col-md-3">
+                    Zip
+                    @Html.EditorFor(model => model.ShipToZip, new { htmlAttributes = new { @class = "form-control", disabled = "disabled" } })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    Attention
+                    @*@Html.EditorFor(model => model.ContactID, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateShippingOrder()" } })*@
+                    @Html.DropDownListFor(model => model.ContactID, (IEnumerable<SelectListItem>)ViewBag.CustomerContactList, " ", new { @class = "form-control dropdown", @onchange = "UpdateContactDetails()", style = "max-width:620px;" })
+                </div>
+                <div class="col-md-3">
+                    Customer Phone
+                    @Html.EditorFor(model => model.ShipToPhone, new { htmlAttributes = new { @class = "form-control", disabled = "disabled" } })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    Shipper
+                    @*@Html.EditorFor(model => model.ShipperID, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateShippingOrder()" } })*@
+                    @Html.DropDownListFor(model => model.ShipperID, (IEnumerable<SelectListItem>)ViewBag.ShipperList, " ", new { @class = "form-control dropdown", @onchange = "UpdateShippingMethod()", style = "max-width:620px;" })
+                </div>
+                <div class="col-md-3">
+                    Shipping Method
+                    @*@Html.EditorFor(model => model.ShipperID, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateShippingOrder()" } })*@
+                    @Html.DropDownListFor(model => model.ShippingMethod, (IEnumerable<SelectListItem>)ViewBag.ShippingMethodList, null, new { @class = "form-control dropdown", @onchange = "UpdateShippingOrder()" })
+                </div>
+                <div class="col-md-3">
+                    UPS Tracking No
+                    @Html.EditorFor(model => model.UpsTracking, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateShippingOrder()" } })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2">
+                    Freight
+                    @Html.DropDownListFor(model => model.Freight, (IEnumerable<SelectListItem>)ViewBag.FreightList, " ", new { @class = "form-control dropdown", @onchange = "UpdateShippingOrder()" })
+                </div>
+                <div class="col-md-2">
+                    Numbered Form <br />
+                    @*<label><input type="checkbox" value="" checked="@Model.NumberedForm" onchange="UpdateShippingOrder()" id="NumberedForm" /></label>*@
+                    @Html.CheckBoxFor(model => model.NumberedForm, new { htmlAttributes = new { @class = "form-control", id = "NumberedForm", style = "max-width:620px;" }, onchange = "UpdateShippingOrder()" })
+                </div>
+                <div class="col-md-2">
+                    Numbered From
+                    @Html.EditorFor(model => model.NoFrom, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateShippingOrder()" } })
+                </div>
+                <div class="col-md-2">
+                    Numbered To
+                    @Html.EditorFor(model => model.NoTo, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateShippingOrder()" } })
+                </div>
+                <div class="col-md-4">
+                    List Numbers Destroyed in Production
+                    @Html.EditorFor(model => model.Destroyed, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateShippingOrder()", style = "max-width:1300px;" } })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    Total Cartons
+                    @Html.EditorFor(model => model.TotalCartons, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateShippingOrder()" } })
+                </div>
+                <div class="col-md-3">
+                    Complete Shipment <br />
+                    @*<label><input type="checkbox" value="" checked="@Model.CompleteShipment" onchange="UpdateShippingOrder()" id="CompleteShipment" /></label>*@
+                    @Html.CheckBoxFor(model => model.CompleteShipment, new { htmlAttributes = new { @class = "form-control", id = "CompleteShipment", style = "max-width:620px;" }, onchange = "UpdateShippingOrder()" })
+                </div>
+                <div class="col-md-3">
+                    Partial Shipment <br />
+                    @*<label><input type="checkbox" value="" checked="@Model.PartialShipment" onchange="UpdateShippingOrder()" id="PartialShipment" /></label>*@
+                    @Html.CheckBoxFor(model => model.PartialShipment, new { htmlAttributes = new { @class = "form-control", id = "PartialShipment", style = "max-width:620px;" }, onchange = "UpdateShippingOrder()" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    Special Instructions
+                    @Html.EditorFor(model => model.Instructions, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateShippingOrder()", style = "max-width:1300px;" } })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    Title 1
+                    @Html.EditorFor(model => model.LadingTitle1, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateShippingOrder()", style = "max-width:1300px;" } })
+                </div>
+                <div class="col-md-6">
+                    Title 2
+                    @Html.EditorFor(model => model.LadingTitle2, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateShippingOrder()", style = "max-width:1300px;" } })
+                </div>
+            </div>
+
+            <br />
+
+            <div class="row">
+                @if (Model.ShippingOrderItems != null && Model.ShippingOrderItems.Count() > 0)
+                {
+                    <div class="col-lg-12 col-md-12">
+                        <table class="table">
+                            <tr>
+                                <th>
+                                    Description
+                                </th>
+                                <th>
+                                    Quantity Ordered
+                                </th>
+                                <th>
+                                    Quantity Shipped
+                                </th>
+                                <th>
+                                    Start No
+                                </th>
+                                <th>
+                                    End No
+                                </th>
+                                <th>
+                                    Status
+                                </th>
+                            </tr>
+                            @foreach (var subitem in Model.ShippingOrderItems)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.HiddenFor(modelItem => subitem.LadingDetailID)
+                                        @Html.HiddenFor(modelItem => subitem.LadingID, new { id = string.Format("item_LadingID_{0}", subitem.LadingDetailID) })
+                                        @*@Html.DisplayFor(modelItem => subitem.Description)*@
+                                        @Html.EditorFor(modelItem => subitem.Description, new { htmlAttributes = new { id = string.Format("item_Description_{0}", subitem.LadingDetailID), @class = "form-control", onblur = string.Format("UpdateShippingItem({0})", subitem.LadingDetailID) } })
+                                    </td>
+                                    <td>
+                                        @*@Html.DisplayFor(modelItem => subitem.QtyOrdered)*@
+                                        @Html.EditorFor(modelItem => subitem.QtyOrdered, new { htmlAttributes = new { id = string.Format("item_QtyOrdered_{0}", subitem.LadingDetailID), @class = "form-control", onblur = string.Format("UpdateShippingItem({0})", subitem.LadingDetailID) } })
+                                    </td>
+                                    <td>
+                                        @*@Html.DisplayFor(modelItem => subitem.QtyShipped)*@
+                                        @Html.EditorFor(modelItem => subitem.QtyShipped, new { htmlAttributes = new { id = string.Format("item_QtyShipped_{0}", subitem.LadingDetailID), @class = "form-control", onblur = string.Format("UpdateShippingItem({0})", subitem.LadingDetailID) } })
+                                    </td>
+                                    <td>
+                                        @*@Html.DisplayFor(modelItem => subitem.StartNumber)*@
+                                        @Html.EditorFor(modelItem => subitem.StartNumber, new { htmlAttributes = new { id = string.Format("item_StartNumber_{0}", subitem.LadingDetailID), @class = "form-control", onblur = string.Format("UpdateShippingItem({0})", subitem.LadingDetailID) } })
+                                    </td>
+                                    <td>
+                                        @*@Html.DisplayFor(modelItem => subitem.EndNumber)*@
+                                        @Html.EditorFor(modelItem => subitem.EndNumber, new { htmlAttributes = new { id = string.Format("item_EndNumber_{0}", subitem.LadingDetailID), @class = "form-control", onblur = string.Format("UpdateShippingItem({0})", subitem.LadingDetailID) } })
+                                    </td>
+                                    <td>
+                                        @*@Html.DisplayFor(modelItem => subitem.Status)*@
+                                        @Html.DropDownListFor(modelItem => subitem.StatusID, new SelectList(ViewBag.ShippingItemStatus, "Value", "Text", subitem.StatusID), null, new { @class = "form-control", id = string.Format("item_StatusID_{0}", subitem.LadingDetailID), @onchange = string.Format("UpdateShippingItem({0})", subitem.LadingDetailID) })
+                                    </td>
+                                </tr>
+                            }
+
+                        </table>
+                    </div>
+                }
+                <div>
+                    @Html.ActionLink("Add Shipping Item", "AddShippingItem", "Shipping", new { so = Model.LadingID }, new { @class = "btn btn-primary link_small" })
+                </div>
+            </div>
+        }
+
+        <div class="row">
+            <div class="col-md-3 pull-right" style="text-align:right;">
+                @Html.ActionLink("Done", "Order", "Shipping", new { so = Model.SalesOrderNo }, new { @class = "btn btn-success link_small" })
+            </div>
+        </div>
+    </div>
+
+}
+
+@section scripts{
+    <script type="text/javascript">
+        var applicationRoot = function () {
+            var appFolders = window.location.pathname.split('/');
+            return window.location.origin + "/" + appFolders[1];
+        }
+
+        var UpdateShippingOrder = function () {
+            console.log($("#ShippingOrderForm").serialize());
+            //$("#SalesOrderForm").submit;
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Shipping/UpdateShippingOrder",
+                data: $("#ShippingOrderForm").serialize(),
+                dataType: "json",
+                success: function (result) {
+
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Shipping Order did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var UpdateShipToAddress = function () {
+            //console.log($("#CustomerNo").val());
+            //console.log($("#ShipAddressID").val());
+
+            //UpdatePurchaseOrder();
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "GET",
+                url: root + "/Shipping/CustomerAddressList",
+                data: {
+                    id: $("#CustomerNo").val()
+                },
+                dataType: "json",
+                success: function (response) {
+                    $("#ShipAddressID").html('');
+                    console.log(response);
+                    $.each(response, function (index, item) {
+                        //console.log(item);
+                        $('#ShipAddressID')
+                            .append($('<option>', { value: item.Value })
+                                .text(item.Text));
+                    });
+
+                    UpdateAddressDetails();
+                }
+            });
+        };
+
+        var UpdateAddressDetails = function () {
+            //console.log($("#CustomerAddressID").val());
+
+            //UpdatePurchaseOrder();
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Shipping/AddressDetails",
+                data: {
+                    id: $("#ShipAddressID").val()
+                },
+                dataType: "json",
+                success: function (result) {
+                    //console.log(result);
+                    var address = $.parseJSON(JSON.stringify(result));
+                    //console.log(vendor.VendorAddress1);
+                    //$("#CustomerAddress1").val(address.ShipAddress1);
+                    $("#ShipToAddress2").val(address.ShipAddress2);
+                    $("#ShipToCity").val(address.ShipCity);
+                    $("#ShipToState").val(address.ShipState);
+                    $("#ShipToZip").val(address.ShipZip);
+
+                    UpdateShippingOrder();
+                }
+            });            
+        };
+
+        var UpdateContactDetails = function () {
+            //console.log($("#VendorNo").val());
+
+            //UpdatePurchaseOrder();
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Shipping/CustomerContact",
+                data: {
+                    id: $("#ContactID").val()
+                },
+                dataType: "json",
+                success: function (result) {
+                    //console.log(result);
+                    var customer = $.parseJSON(JSON.stringify(result));
+                    $("#ShipToPhone").val(customer.ContactPhone);
+
+                    UpdateShippingOrder();
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Shipping Order did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var UpdateShippingMethod = function () {
+            console.log($("#ShipperID").val());
+            var root = applicationRoot();
+            $.ajax({
+                url: root + "/Purchase/FilteredShippingMethods",
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    id: $("#ShipperID").val()
+                },
+                success: function (response) {
+                    $("#ShippingMethod").html('');
+                    //console.log(response);
+                    $.each(response, function (index, item) {
+                        //console.log(item);
+                        $('#ShippingMethod')
+                            .append($('<option>', { value: item.Value })
+                                .text(item.Text));
+                    });
+                    UpdateShippingOrder();
+                }
+            });
+        };
+
+        var UpdateVendorDetails = function () {
+            //console.log($("#VendorNo").val());
+
+            UpdatePurchaseOrder();
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Purchase/VendorDetails",
+                data: {
+                    id: $("#VendorNo").val()
+                },
+                dataType: "json",
+                success: function (result) {
+                    //console.log(result);
+                    var vendor = $.parseJSON(JSON.stringify(result));
+                    //console.log(vendor.VendorAddress1);
+                    $("#VendorAddress1").val(vendor.VendorAddress1);
+                    $("#VendorAddress2").val(vendor.VendorAddress2);
+                    $("#VendorPhone").val(vendor.VendorPhone);
+                    $("#VendorCity").val(vendor.VendorCity);
+                    $("#VendorState").val(vendor.VendorState);
+                    $("#VendorZip").val(vendor.VendorZip);
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Purchase Order did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var UpdateShippingItem = function (id) {
+            //console.log(id);
+
+            var shippingItem = {
+                LadingDetailID: id,
+                LadingID: $("#item_LadingID_" + id).val(),
+                Description: $("#item_Description_" + id).val(),
+                QtyOrdered: $("#item_QtyOrdered_" + id).val(),
+                QtyShipped: $("#item_QtyShipped_" + id).val(),
+                StartNumber: $("#item_StartNumber_" + id).val(),
+                EndNumber: $("#item_EndNumber_" + id).val(),
+                StatusID: $("#item_StatusID_" + id).val()
+            };
+
+            //console.log(shippingItem);
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Shipping/UpdateShippingItem",
+                data: shippingItem,
+                dataType: "json",
+                success: function (result) {
+
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Shipping Order Item did not save correctly.");
+                    }
+                }
+            });
+        };
+    </script>
+}

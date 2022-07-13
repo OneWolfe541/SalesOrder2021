@@ -1,0 +1,200 @@
+﻿@model IEnumerable<SalesOrder2021.Models.SalesOrderSearchDetails>
+
+@{
+    ViewBag.Title = "Search";
+}
+
+<style>
+    .link_small {
+        font-size: 10px;
+        padding: 2px 10px 2px 10px;
+    }
+</style>
+
+<h2>Sales Order Search</h2>
+
+<div class="row">
+    @*<div class="col-md-2">
+        @Html.DropDownList("DocumentTypes", (IEnumerable<SelectListItem>)ViewBag.DocumentTypes, new { @class = "form-control", onchange = "ChangeDocumentType()" })
+    </div>*@
+    <div class="col-lg-2 col-md-4">
+        <b>Order Status</b>
+        @Html.DropDownList("SalesStatus", (IEnumerable<SelectListItem>)ViewBag.SalesStatusList, new { @class = "form-control" })
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <b>Customer Name</b>
+        <input class="form-control text-box single-line" id="CustomerFilter" name="CustomerFilter" type="text" onblur="FilterCustomerList()" value="@ViewBag.CustomerName" />
+        @Html.DropDownList("SalesCustomer", (IEnumerable<SelectListItem>)ViewBag.CustomerList, "ALL", new { @class = "form-control" })
+    </div>    
+</div>
+
+<div class="row">
+    <div class="col-md-1">
+        <a id="btnGo" href="#" class="btn btn-success" onclick="SearchSalesOrders()" style="font-size:20px; width:100px; padding-top:2px; padding-bottom:2px;">Go</a>
+    </div>
+</div>
+
+@*<div class="row">
+    <div class="col-md-2" style="text-align:center;">
+        <a id="btnAdd" href="#" style="font-size:16px; width:100px; padding-top:2px; padding-bottom:2px;" onclick="AddSalesOrder()">Add Sales Order</a>
+    </div>
+</div>*@
+
+<div class="row" style="font-size:14px;">
+    <br />
+    <table align="left" style="width:100%; max-width:1050px;">
+        @if (Model != null)
+        {
+            <tr>
+                <th>
+                    Number
+                </th>
+                <th>
+                    Customer
+                </th>
+                <th>
+                    Date
+                </th>
+                <th>
+                    Item
+                </th>
+            </tr>
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td style="text-align:left; width:80px; border-top:1px solid black;">
+                        <a href="/salesorder/Sales/Order?so=@item.SalesOrderNo" data="@item.SalesOrderNo">
+                            @Html.DisplayFor(modelItem => item.SalesOrderNo)
+                        </a>
+                    </td>
+
+                    <td style="text-align:left; width:300px; white-space:nowrap; text-overflow:ellipsis; overflow:hidden; max-width:1px; border-top:1px solid black;">
+                        <a href="/salesorder/Sales/Order?so=@item.SalesOrderNo" data="@item.SalesOrderNo">
+                            @Html.DisplayFor(modelItem => item.CustomerName)
+                        </a>
+                    </td>
+
+                    <td style="text-align:left; width:100px; border-top:1px solid black;">
+                        <a href="/salesorder/Sales/Order?so=@item.SalesOrderNo" data="@item.SalesOrderNo">
+                            @Html.DisplayFor(modelItem => item.OrderDate)
+                        </a>
+                    </td>
+
+                    <td style="text-align:left; white-space:nowrap; width:700px; text-overflow:ellipsis; overflow: hidden; max-width:1px; border-top:1px solid black;">
+                        <a href="/salesorder/Sales/Order?so=@item.SalesOrderNo" data="@item.SalesOrderNo">
+                            @Html.DisplayFor(modelItem => item.GenDescription)
+                        </a>
+                    </td>                    
+                </tr>
+                @*<tr>
+                    <td style="text-align:left;" colspan="4">
+                        <table style="width:100%;">
+                            <tr>
+                                <td style="text-align:center;">
+                                    @Html.ActionLink("Sales Order", "Order", "Sales", new { so = item.SalesOrderNo }, new { @class = "btn btn-primary link_small" })
+                                </td>
+                                <td style="text-align:center;">
+                                    @Html.ActionLink("Puchase Order", "Order", "Purchase", new { so = item.SalesOrderNo }, new { @class = "btn btn-primary link_small" })
+                                </td>
+                                <td style="text-align:center;">
+                                    @Html.ActionLink("Shipping Order", "Order", "Shipping", new { so = item.SalesOrderNo }, new { @class = "btn btn-primary link_small" })
+                                </td>
+                                <td style="text-align:center;">
+                                    @Html.ActionLink("Election Order", "Order", "Election", new { so = item.SalesOrderNo }, new { @class = "btn btn-primary link_small" })
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>*@
+                <tr>
+                    <td height="2px;" colspan="4" style="font-size:4px;">
+                        &nbsp;
+                    </td>
+                </tr>
+            }
+        }
+    </table>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        var applicationRoot = function () {
+            var appFolders = window.location.pathname.split('/');
+            return window.location.origin + "/" + appFolders[1];
+        }
+
+        // Change page when drop down list is changed
+        var SearchSalesOrders = function () {
+            console.log($("#SalesStatus").val());
+            console.log($("#SalesCustomer").val());
+            console.log($("#CustomerFilter").val());            
+            window.location.replace("../Sales/Search?statid=" + $("#SalesStatus").val() + "&custid=" + $("#SalesCustomer").val() + "&custname=" + $("#CustomerFilter").val());
+        };
+
+        $('#CustomerFilter').keypress(function (event) {
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+            if (keycode == '13') {
+                FilterCustomerList();
+            }
+        });
+
+        var FilterCustomerList = function () {
+            //console.log($("#CustomerFilter").val());
+            var root = applicationRoot();
+            $.ajax({
+                url: root + "/Sales/FilteredCustomers",
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    custname: $("#CustomerFilter").val()
+                },
+                success: function (response) {
+                    $("#SalesCustomer").html('');
+                    //console.log(response);
+                    $.each(response, function (index, item) {
+                        //console.log(item);
+                        $('#SalesCustomer')
+                            .append($('<option>', { value: item.Value })
+                                .text(item.Text));
+                    });
+                }
+            });
+        };
+
+        var ChangeDocumentType = function () {
+            var selectedValue = $('#DocumentTypes').val();
+            //console.log($('#DocumentTypes').val());
+            var controler = "Sales";
+            var root = applicationRoot();
+            switch ($('#DocumentTypes').val()) {
+                case '1':
+                    controler = "Sales";
+                    break;
+                case '2':
+                    controler = "Purchase";
+                    break;
+                case '3':
+                    controler = "Shipping";
+                    break;
+                case '4':
+                    controler = "Election";
+                    break;
+            }
+            //console.log(controler);
+            $('a').each(function () {
+                $(this).attr('href', root + '/' + controler + '/Order?so=' + $(this).attr("data"));
+            });
+        };
+
+        var AddSalesOrder = function () {
+            if ($('#SalesCustomer').val() === '') {
+                console.log("No value selected");
+            }
+            else {
+                console.log($("#SalesCustomer").val());
+                window.location.replace("../Sales/Add?custId=" + $("#SalesCustomer").val());
+            }            
+        };
+    </script>
+}
+

@@ -1,0 +1,77 @@
+﻿
+@{
+    ViewBag.Title = "Add";
+}
+
+<h2>Add Sales Order</h2>
+
+<div class="row">
+    <p><b>1. Enter all or part of the Customer Name.</b></p>
+    <p><b>2. Select Customer from drop down list.</b></p>
+    <p><b>3. Click Create Sales Order button.</b></p>
+</div>
+
+<div class="row">
+    <div class="col-md-2">
+        Customer Name
+        <input class="form-control text-box single-line" id="CustomerFilter" name="CustomerFilter" type="text" onblur="FilterCustomerList()" value="@ViewBag.CustomerName" />
+    </div>
+    <div class="col-md-3">
+        Select Customer
+        @Html.DropDownList("SalesCustomer", (IEnumerable<SelectListItem>)ViewBag.CustomerList, "ALL", new { @class = "form-control" })
+    </div>
+    <div class="col-md-2">
+        <br />
+        <a id="btnGo" href="#" class="btn btn-success" onclick="AddSalesOrder()" style="font-size:20px; padding-top:2px; padding-bottom:2px;">Create Sales Order</a>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        var applicationRoot = function () {
+            var appFolders = window.location.pathname.split('/');
+            return window.location.origin + "/" + appFolders[1];
+        }
+
+        $('#CustomerFilter').keypress(function (event) {
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+            if (keycode == '13') {
+                FilterCustomerList();
+            }
+        });
+
+        var FilterCustomerList = function () {
+            //console.log($("#CustomerFilter").val());
+            var root = applicationRoot();
+            $.ajax({
+                url: root + "/Sales/FilteredCustomers",
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    custname: $("#CustomerFilter").val()
+                },
+                success: function (response) {
+                    $("#SalesCustomer").html('');
+                    //console.log(response);
+                    $.each(response, function (index, item) {
+                        //console.log(item);
+                        $('#SalesCustomer')
+                            .append($('<option>', { value: item.Value })
+                                .text(item.Text));
+                    });
+                }
+            });
+        };
+
+        var AddSalesOrder = function () {
+            if ($('#SalesCustomer').val() === '') {
+                console.log("No value selected");
+            }
+            else {
+                console.log($("#SalesCustomer").val());
+                window.location.replace("../Sales/Create?custId=" + $("#SalesCustomer").val());
+            }
+        };
+    </script>
+}
+

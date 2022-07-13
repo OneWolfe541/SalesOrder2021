@@ -1,0 +1,379 @@
+﻿@model SalesOrder2021.Models.SalesOrderDetails
+
+@{
+    ViewBag.Title = "Sales Order";
+}
+
+<style>
+    .table_header {
+        border: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_subheader {
+        border-bottom: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_content {
+        border: 1px solid black;
+        text-align: center;
+        vertical-align: top;
+        padding: 5px;
+    }
+
+    .table_content_large {
+        border: 1px solid black;
+        text-align: center;
+        font-size: 24px;
+        padding: 10px;
+    }
+</style>
+
+@if (Model != null)
+{
+    <h2>Sales Order Edit: @Html.DisplayFor(model => model.SalesOrderNo)</h2>
+
+    @*<input id="SalesTax" name="SalesTax" type="hidden" value="@ViewBag.SalesTax" />*@
+
+    <div class="form-horizontal">
+        @using (Html.BeginForm("UpdateSalesOrder", "Sales", FormMethod.Post, new { id = "SalesOrderForm" }))
+        {
+            <div class="row">
+                <div class="col-md-2">
+                    Date Of Order
+                    @Html.EditorFor(model => model.OrderDate, new { htmlAttributes = new { @class = "form-control datepicker", onblur = "UpdateSalesOrder()" } })
+                </div>
+                <div class="col-md-2">
+                    Status
+                    @Html.DropDownListFor(model => model.SOStatusID, (IEnumerable<SelectListItem>)ViewBag.SalesStatusList, null, new { @class = "form-control", @onchange = "UpdateSalesOrder()" })
+                    @*@Html.DropDownList("SalesStatus", (IEnumerable<SelectListItem>)ViewBag.SalesStatusList, new { @class = "form-control" })*@
+                </div>
+                <div class="col-md-3">
+                    Bill To Customer
+                    @Html.DropDownListFor(model => model.BillCustomerNo, (IEnumerable<SelectListItem>)ViewBag.CustomerList, null, new { @class = "form-control", @onchange = string.Format("UpdateCustomer({0})", Model.SalesOrderNo) })
+                    @*@Html.DropDownList("BillToCustomer", (IEnumerable<SelectListItem>)ViewBag.CustomerList, "ALL", new { @class = "form-control" })*@
+                </div>
+                <div class="col-md-2">
+                    Created By
+                    @Html.DropDownListFor(model => model.Createdby, (IEnumerable<SelectListItem>)ViewBag.EmployeeList, null, new { @class = "form-control", @onchange = "UpdateSalesOrder()", disabled = "disabled" })
+                    @*@Html.DropDownList("CreatedBy", (IEnumerable<SelectListItem>)ViewBag.EmployeeList, new { @class = "form-control" })*@
+                </div>
+                <div class="col-md-3" style="min-width:140px;">
+                    Requested Date
+                    @Html.EditorFor(model => model.ReqShipDate, new { htmlAttributes = new { @class = "form-control datepicker", onblur = "UpdateSalesOrder()" } })
+                </div>
+                @*<div class="col-md-3" style="min-width:320px;">
+                        <div class="col-md-6" style="min-width:140px;">
+                            Requested Date
+                            @Html.EditorFor(model => model.ReqShipDate, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateSalesOrder()" } })
+                        </div>
+                        <div class="col-md-6">
+                            Actual Date
+                            @Html.EditorFor(model => model.ActShipDate, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateSalesOrder()" } })
+                        </div>
+                    </div>*@
+            </div>
+
+            <br />
+
+            <div class="row">
+                <div class="col-md-3">
+                    Customer Code
+                    @Html.EditorFor(model => model.CustomerID, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateSalesOrder()" } })
+                </div>
+                <div class="col-md-3">
+                    Customer Contact
+                    @Html.DropDownListFor(model => model.CustomerContact, (IEnumerable<SelectListItem>)ViewBag.ContactList, null, new { @class = "form-control", @onchange = "UpdateSalesOrder()" })
+                    @*@Html.DropDownList("CustomerContact", (IEnumerable<SelectListItem>)ViewBag.ContactList, new { @class = "form-control" })*@
+                </div>
+                <div class="col-md-3">
+                    Customer PO
+                    @Html.EditorFor(model => model.CustomerPO, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateSalesOrder()" } })
+                </div>
+                <div class="col-md-3">
+                    Account Code
+                    @Html.DropDownListFor(model => model.AccountCode, (IEnumerable<SelectListItem>)ViewBag.AccountingList, null, new { @class = "form-control", @onchange = "UpdateSalesOrder()" })
+                    @*@Html.DropDownList("AccountCode", (IEnumerable<SelectListItem>)ViewBag.AccountingList, new { @class = "form-control" })*@
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="row">
+                <div class="col-md-12">
+                    <b style="font-size:18px;">Sales Order Items</b>
+                    @if (Model.SalesOrderItems != null && Model.SalesOrderItems.Count() > 0)
+                    {
+                        <table>
+                            <tr>
+                                <th style="text-align:center;">
+                                    Item No
+                                </th>
+                                <th style="text-align:center;">
+                                    Ordered
+                                </th>
+                                <th>
+                                    Description
+                                </th>
+                                <th style="text-align:center;">
+                                    Cust Price
+                                </th>
+                                <th style="text-align:center;">
+                                    Per
+                                </th>
+                                <th style="text-align:center;">
+                                    Extension
+                                </th>
+                            </tr>
+
+                            @foreach (var item in Model.SalesOrderItems)
+                            {
+                                <tr>
+                                    <td style="width:12%;">
+                                        @Html.HiddenFor(model => item.ItemRecordID)
+                                        @Html.HiddenFor(model => item.SalesOrderNo, new { id = string.Format("item_SalesOrderNo_{0}", item.ItemRecordID) })
+                                        @Html.EditorFor(model => item.ItemNo, new { htmlAttributes = new { id = string.Format("item_ItemNo_{0}", item.ItemRecordID), @class = "form-control", style = "text-align:center;", onblur = string.Format("UpdateSalesOrderItem({0})", item.ItemRecordID) } })
+                                    </td>
+                                    <td style="width:12%;">
+                                        @Html.EditorFor(model => item.Quantity, new { htmlAttributes = new { id = string.Format("item_Quantity_{0}", item.ItemRecordID), @class = "form-control", style = "text-align:center;", onblur = string.Format("UpdateSalesOrderItem({0})", item.ItemRecordID) } })
+                                    </td>
+                                    <td style="width:40%;">
+                                        @Html.EditorFor(model => item.GenDescription, new { htmlAttributes = new { id = string.Format("item_GenDescription_{0}", item.ItemRecordID), @class = "form-control", style = "max-width:1000px;", onblur = string.Format("UpdateSalesOrderItem({0})", item.ItemRecordID) } })
+                                    </td>
+                                    <td style="width:12%;">
+                                        @Html.EditorFor(model => item.CustPrice, new { htmlAttributes = new { id = string.Format("item_CustPrice_{0}", item.ItemRecordID), @class = "form-control", style = "text-align:right;", onblur = string.Format("UpdateSalesOrderItem({0})", item.ItemRecordID) } })
+                                    </td>
+                                    <td>
+                                        @Html.DropDownListFor(model => item.PricePerUnit, (IEnumerable<SelectListItem>)ViewBag.PricingList, null, new { @class = "form-control", id = string.Format("item_PricePerUnit_{0}", item.ItemRecordID), @onchange = string.Format("UpdateSalesOrderItem({0})", item.ItemRecordID) })
+                                        @*@Html.EditorFor(model => item.PricePerUnit, new { htmlAttributes = new { id = string.Format("item_PricePerUnit_{0}", item.ItemRecordID), @class = "form-control", onblur = string.Format("UpdateSalesOrderItem({0})", item.ItemRecordID) } })*@
+                                    </td>
+                                    <td style="width:12%;">
+                                        @Html.EditorFor(model => item.Extension, new { htmlAttributes = new { id = string.Format("item_Extension_{0}", item.ItemRecordID), @class = "form-control", style = "text-align:right;", onblur = string.Format("UpdateSalesOrderItem({0})", item.ItemRecordID) } })
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td colspan="6">
+                                    <br />
+                                    @*<a id="btnAdd" href="/salesorder/Sales/AddItem?so=@Model.SalesOrderNo" style="font-size:16px; width:100px; padding-top:2px; padding-bottom:2px;">Add Sales Item</a>*@
+                                    @Html.ActionLink("Add Sales Item", "AddItem", "Sales", new { so = Model.SalesOrderNo }, new { @class = "btn btn-primary link_small" })
+                                </td>
+                            </tr>
+                        </table>
+                    }
+                    else
+                    {
+                        <br />
+                        @Html.ActionLink("Add Sales Item", "AddItem", "Sales", new { so = Model.SalesOrderNo }, new { @class = "btn btn-primary link_small" })
+                    }
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="row">
+                <div class="col-md-3">
+                    Tax
+                    @Html.DropDownListFor(model => model.TaxStatus, (IEnumerable<SelectListItem>)ViewBag.TaxTypeList, null, new { @class = "form-control", @onchange = "UpdateSalesOrder()" })
+                    @*@Html.DropDownList("TaxType", (IEnumerable<SelectListItem>)ViewBag.TaxTypeList, new { @class = "form-control" })*@
+                </div>
+                <div class="col-md-3">
+                    Tax Value
+                    @Html.EditorFor(model => model.TaxValue, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateSalesOrder()" } })
+                </div>
+                <div class="col-md-2 currency">
+                    Sales Order Total
+                    @Html.EditorFor(model => model.SalesOrderTotal, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateSalesOrder()" } })
+                </div>
+                <div class="col-md-2">
+                    Billed By
+                    @Html.DropDownListFor(model => model.Billedby, (IEnumerable<SelectListItem>)ViewBag.BilledByList, " ", new { @class = "form-control", @onchange = "UpdateSalesOrder()" })
+                    @*@Html.DropDownList("BilledBy", (IEnumerable<SelectListItem>)ViewBag.BilledByList, new { @class = "form-control" })*@
+                </div>
+
+                <div class="col-md-2">
+                    Invoice No
+                    @Html.EditorFor(model => model.InvoiceNo, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateSalesOrder()" } })
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-3">
+                    @*@Html.ActionLink("Calculate Sales Order Total", "Total", "Sales", new { so = Model.SalesOrderNo }, new { @class = "btn btn-primary link_small" })*@
+                    <a class="btn btn-primary link_small" href="#" onclick="UpdateSalesOrderTotal()">Calculate Sales Order Total</a>
+                </div>
+
+                <div class="col-md-3 pull-right" style="text-align:right;">
+                    @Html.ActionLink("Done", "Order", "Sales", new { so = Model.SalesOrderNo }, new { @class = "btn btn-success link_small" })
+                </div>
+            </div>
+
+            <br />
+            @Html.HiddenFor(modelItem => Model.SalesOrderNo)
+            @Html.HiddenFor(modelItem => Model.ContractNo)
+            @Html.HiddenFor(modelItem => Model.BilledDate)
+            @Html.HiddenFor(modelItem => Model.SalesOrderCost)
+            @Html.HiddenFor(modelItem => Model.ProjectNo)
+            @Html.HiddenFor(modelItem => Model.MiscSalesOrder)
+            @*<a id="btnUpdate" href="#" class="btn btn-primary" style="font-size:16px; width:100px; padding-top:2px; padding-bottom:2px;" onclick="UpdateSalesOrder()">Update</a>*@
+        }
+    </div>
+}
+
+@section scripts{
+    <script type="text/javascript">
+        var applicationRoot = function () {
+            var appFolders = window.location.pathname.split('/');
+            return window.location.origin + "/" + appFolders[1];
+        }
+
+        $(function () { // will trigger when the document is ready
+            $('.datepicker').datepicker(); //Initialise any date pickers
+        });
+
+        var UpdateSalesOrder = function () {
+            //console.log($("#SalesOrderForm").serialize());
+            //$("#SalesOrderForm").submit;
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Sales/UpdateSalesOrder",
+                data: $("#SalesOrderForm").serialize(),
+                dataType: "json",
+                success: function (result) {
+
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Sales Order did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var UpdateSalesOrderItem = function (id) {
+            console.log(id);
+            //console.log($("#SalesItemForm" + id).index());
+            //console.log($("#SalesItemForm" + id).serialize());
+
+            console.log($("#item_PricePerUnit_" + id).val());
+
+            // Calculate line item total price
+            if ($("#item_PricePerUnit_" + id).val() == 0) {
+                $("#item_Extension_" + id).val($("#item_CustPrice_" + id).val());
+            }
+            else {
+                //console.log($("#item_Quantity_" + id).val());
+                //console.log($("#item_PricePerUnit_" + id).val());
+                //console.log($("#item_CustPrice_" + id).val() / $("#item_PricePerUnit_" + id).val());
+                $("#item_Extension_" + id).val($("#item_Quantity_" + id).val() * ($("#item_CustPrice_" + id).val() / $("#item_PricePerUnit_" + id).val()));
+            };
+
+            var salesItem = {
+                ItemRecordID: id,
+                SalesOrderNo: $("#item_SalesOrderNo_" + id).val(),
+                ItemNo: $("#item_ItemNo_" + id).val(),
+                Quantity: $("#item_Quantity_" + id).val(),
+                GenDescription: $("#item_GenDescription_" + id).val(),
+                PricePerUnit: $("#item_PricePerUnit_" + id).val(),
+                CustPrice: $("#item_CustPrice_" + id).val(),
+                Extension: $("#item_Extension_" + id).val()
+            };
+
+            //console.log($("#item_SalesOrderNo_" + id).val());
+            //console.log(salesItem);
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Sales/UpdateSalesOrderItem",
+                data: salesItem,
+                dataType: "json",
+                success: function (result) {
+
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Sales Item did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var UpdateSalesOrderTotal = function () {
+            //console.log($("#SalesOrderForm").serialize());
+            //$("#SalesOrderForm").submit;
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Sales/UpdateSalesOrderTotal",
+                data: $("#SalesOrderForm").serialize(),
+                dataType: "json",
+                success: function (result) {
+                    window.location.replace("../Sales/Edit?so=" + $("#SalesOrderNo").val());
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Sales Order did not save correctly.");
+                    }
+                }
+            });
+
+            window.location.replace("../Sales/Edit?so=" + $("#SalesOrderNo").val());
+        };
+
+        var UpdateCustomer = function (id) {
+            console.log(id);
+            console.log($("#BillCustomerNo").val());
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "GET",
+                url: root + "/Sales/CutomerCode",
+                data: {
+                    cust: $("#BillCustomerNo").val()
+                },
+                dataType: "json",
+                success: function (result) {
+                    //console.log("result=" + result);
+                    $("#CustomerID").val(result);
+                    $('#CustomerID').attr('value', result);
+
+                    $.ajax({
+                        url: root + "/Sales/FilteredCustomerContacts",
+                        type: 'GET',
+                        dataType: 'json',
+                        data: {
+                            cust: $("#BillCustomerNo").val()
+                        },
+                        success: function (response) {
+                            $("#CustomerContact").html('');
+                            //console.log(response);
+                            $.each(response, function (index, item) {
+                                //console.log(item);
+                                $('#CustomerContact')
+                                    .append($('<option>', { value: item.Value })
+                                        .text(item.Text));
+                            });
+
+                            console.log($("#CustomerID").val());
+
+                            UpdateSalesOrder();
+                        }
+                    });
+                },
+                error: function (result) {
+                    //if (result == false) {
+                    //    alert("Sales Item did not save correctly.");
+                    //}
+                }
+            });
+        };
+    </script>
+}
+

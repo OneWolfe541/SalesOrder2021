@@ -1,0 +1,397 @@
+﻿@model SalesOrder2021.Models.SalesOrderDetails
+
+@{
+    ViewBag.Title = "Sales Order";
+}
+
+<style>
+    .table_header {
+        border: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_subheader {
+        border-bottom: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_content {
+        border: 1px solid black;
+        text-align: center;
+        vertical-align: top;
+        padding: 5px;
+    }
+
+    .table_content_large {
+        border: 1px solid black;
+        text-align: center;
+        font-size: 24px;
+        padding: 10px;
+    }
+</style>
+
+<br />
+
+@if (Model != null)
+{
+
+    <div>
+        @Html.ActionLink("Sales Order", "Order", "Sales", new { so = Model.SalesOrderNo }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Purchase Order", "Order", "Purchase", new { so = Model.SalesOrderNo }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Shipping Order", "Order", "Shipping", new { so = Model.SalesOrderNo }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Election Order", "Order", "Election", new { so = Model.SalesOrderNo }, new { @class = "btn btn-primary link_small" })
+    </div>
+    <br />
+    <div>
+        @Html.ActionLink("Add Shipping Order", "Create", "Shipping", new { so = Model.SalesOrderNo }, new { @class = "link_small" })
+    </div>
+
+    <h2 style="text-align:center;">Sales Order</h2>
+    if (Model.SOStatusID == 1)
+    {
+        <p style="text-align:center; margin-top:-10px;">
+            <a id="btnAdd" href="#" style="font-size:16px; text-align:center;" onclick="EditSalesOrder()">Edit</a>
+        </p>
+    }
+
+    <br />
+
+    <div class="form-horizontal">
+
+        <div class="row">
+            <div class="col-lg-5 col-md-7" style="min-width:500px;">
+                <img src='@Url.Content("~/Images/AESslug.png")' width="460" />
+            </div>
+
+            <div class="col-md-5">
+                <table style="border:1px solid black; width:100%;">
+                    <tr>
+                        <td class="table_header" style="text-align:center;">
+                            Date Of Order
+                        </td>
+
+                        <td class="table_header" colspan="2" style="text-align:right; padding-right:20px;">
+                            Sales Order No
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table_content">                            
+                            &nbsp;
+                            @Html.DisplayFor(model => model.OrderDate, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                        <td class="table_content" style="padding:0;">
+                            <table style="margin:0; width:100%;">
+                                <tr>
+                                    <td class="table_subheader">
+                                        Account Code
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        &nbsp;
+                                        @Html.DisplayFor(model => model.AccountCode, new { htmlAttributes = new { @class = "form-control" } })
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td class="table_content_large" style="font-weight:600;">
+                            @Html.HiddenFor(model => model.SalesOrderNo)
+                            &nbsp;
+                            @Html.DisplayFor(model => model.SalesOrderNo, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                    </tr>
+                </table>
+
+                <br />
+
+                <table style="border:1px solid black; width:100%;">
+                    <tr>
+                        <td class="table_header" style="text-align:center;" rowspan="2" width="50%">
+                            Customer Purchase Order Number
+                        </td>
+                        <td class="table_header" style="text-align:center;" colspan="2" width="50%">
+                            Ship Date
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table_header" style="text-align:center;">
+                            Requested
+                        </td>
+                        <td class="table_header" style="text-align:center;">
+                            Actual
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table_content" style="text-align:center;">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.CustomerPO, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                        <td class="table_content" style="text-align:center;">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.ReqShipDate, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                        <td class="table_content" style="text-align:center;">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.ActShipDate, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <br />
+
+        <p><b>Status:</b> @Html.DisplayFor(model => model.SOStatus, new { htmlAttributes = new { @class = "form-control" } })</p>
+        <div class="row">
+            <div class="col-lg-5 col-md-7">
+                <table style="border:1px solid black; width:100%;">
+                    <tr>
+                        <td class="table_header" style="text-align:center;" colspan="3">
+                            Bill To
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table_content" style="text-align:left;" colspan="3">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.CustomerName, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table_content" style="text-align:left;" colspan="3">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.BillAddress1, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table_content" style="text-align:left;" colspan="3">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.BillAddress2, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table_content" style="text-align:left;">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.BillCity, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                        <td class="table_content" style="text-align:center;">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.BillState, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                        <td class="table_content" style="text-align:center;">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.BillZip, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                    </tr>
+                </table>
+                <br />
+            </div>
+
+            <div class="col-md-5">
+                <table style="border:1px solid black; width:100%;">
+                    <tr>
+                        <td class="table_header" style="text-align:center;">
+                            Customer No
+                        </td>
+                        <td class="table_header" style="text-align:center;">
+                            Customer Contact
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table_content" style="text-align:center;">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.CustomerID, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                        <td class="table_content" style="text-align:center;">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.ContactName, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table_header" style="text-align:center;">
+                            Phone
+                        </td>
+                        <td class="table_header" style="text-align:center;">
+                            Fax
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table_content" style="text-align:center;">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.MainPhone, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                        <td class="table_content" style="text-align:center;">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.MainFax, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                    </tr>
+                </table>
+
+                <br />
+
+                <table style="border:1px solid black; width:100%;">
+                    <tr>
+                        <td class="table_header" style="text-align:center;">
+                            Created By
+                        </td>
+                        <td class="table_content" style="text-align:left; padding-left:10px;">
+                            &nbsp;
+                            @Html.DisplayFor(model => model.CreatedbyName, new { htmlAttributes = new { @class = "form-control" } })
+                        </td>
+                    </tr>
+                </table>
+                <br />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-5 col-md-7">
+                <table style="border:0px solid transparent; width:100%;">
+                    <tr>
+                        <td>
+                            <table style="border:1px solid black; width:100%;">
+                                <tr>
+                                    <td class="table_header" style="text-align:center;">
+                                        Sales Order Total
+                                    </td>
+                                    <td class="table_content" style="text-align:left; padding-left:10px;">
+                                        &nbsp;
+                                        @Html.DisplayFor(model => model.SalesOrderTotal, new { htmlAttributes = new { @class = "form-control" } })
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+
+                        <td>
+                            <table style="border:1px solid black; width:100%; margin-left:5px;">
+                                <tr>
+                                    <td class="table_header" style="text-align:center;">
+                                        Tax
+                                    </td>
+                                    <td class="table_content" style="text-align:center; padding-left:10px;">
+                                        &nbsp;
+                                        @Html.DisplayFor(model => model.TaxStatus, new { htmlAttributes = new { @class = "form-control" } })
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+                <br />
+            </div>
+
+            <div class="col-md-5">
+                <table style="border:0px solid transparent; width:100%;">
+                    <tr>
+                        <td>
+                            <table style="border:1px solid black; width:100%;">
+                                <tr>
+                                    <td class="table_header" style="text-align:center;">
+                                        Tax Value
+                                    </td>
+                                    <td class="table_content" style="text-align:left; padding-left:10px;">
+                                        &nbsp;
+                                        @Html.DisplayFor(model => model.TaxValue, new { htmlAttributes = new { @class = "form-control" } })
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+
+                        <td>
+                            <table style="border:1px solid black; width:100%; margin-left:5px;">
+                                <tr>
+                                    <td class="table_header" style="text-align:center;">
+                                        Sales Order Cost
+                                    </td>
+                                    <td class="table_content" style="text-align:left; padding-left:10px;">
+                                        &nbsp;
+                                        @Html.DisplayFor(model => model.SalesOrderCost, new { htmlAttributes = new { @class = "form-control" } })
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+                <br />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-10 col-md-12">
+                <table class="table">
+                    <tr>
+                        <th>
+                            Item No
+                        </th>
+                        <th>
+                            Ordered
+                        </th>
+                        <th>
+                            Description
+                        </th>
+                        <th>
+                            Price
+                        </th>
+                        <th>
+                            Per
+                        </th>
+                        <th>
+                            Extension
+                        </th>
+                    </tr>
+                    @foreach (var item in Model.SalesOrderItems)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ItemNo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Quantity)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.GenDescription)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CustPrice)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.PricePerUnit)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Extension)
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div>
+        @Html.ActionLink("Sales Order", "Order", "Sales", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Purchase Order", "Order", "Purchase", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Shipping Order", "Order", "Shipping", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Election Order", "Order", "Election", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+    </div>
+
+    <h2 style="text-align:center;">Sales Order</h2>
+}
+
+@section scripts{
+    <script type="text/javascript">
+        var EditSalesOrder = function () {
+            console.log($("#SalesOrderNo").val());
+            window.location.replace("../Sales/Edit?so=" + $("#SalesOrderNo").val());
+        };
+    </script>
+}

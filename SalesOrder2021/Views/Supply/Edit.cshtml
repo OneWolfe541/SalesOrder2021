@@ -1,0 +1,188 @@
+﻿@model SalesOrder2021.Models.SupplyOrderDetails
+
+@{
+    ViewBag.Title = "Supply Order";
+}
+
+<style>
+    .table_header {
+        border: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_subheader {
+        border-bottom: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_content {
+        border: 1px solid black;
+        text-align: center;
+        vertical-align: top;
+        padding: 5px;
+    }
+
+    .table_content_large {
+        border: 1px solid black;
+        text-align: center;
+        font-size: 24px;
+        padding: 10px;
+    }
+</style>
+
+@if (Model != null)
+{
+    <h2>Supply Order Edit: @Html.DisplayFor(model => model.ElecSupplyOrderNo)</h2>
+
+    <div class="form-horizontal">
+        @using (Html.BeginForm("UpdateSupplyOrder", "Supply", FormMethod.Post, new { id = "SupplyOrderForm" }))
+        {
+            @Html.HiddenFor(model => model.ElecSupplyOrderNo)
+            @Html.HiddenFor(model => model.SupplyOrderID)
+            @Html.HiddenFor(model => model.ElectionOrderNo)
+
+            <div class="row">
+                <div class="col-md-2">
+                    Date Of Entry
+                    @Html.EditorFor(model => model.EntryDate, new { htmlAttributes = new { @class = "form-control datepicker", onchange = "UpdateSupplyOrder()" } })
+                </div>
+                <div class="col-md-3">
+                    Entered By
+                    @Html.DropDownListFor(model => model.AESContactID, (IEnumerable<SelectListItem>)ViewBag.EmployeeList, null, new { @class = "form-control", @onchange = "UpdateSupplyOrder()", disabled = "disabled" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    Ballot Order Type
+                    @Html.DropDownListFor(model => model.OrderTypeID, (IEnumerable<SelectListItem>)ViewBag.OrderTypesList, " ", new { @class = "form-control", @onchange = "UpdateSupplyOrder()" })
+                </div>
+                <div class="col-md-3">
+                    Ballot Order Name
+                    @Html.EditorFor(model => model.ESOrderName, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateSupplyOrder()" } })
+                </div>
+                <div class="col-md-6">
+                    Special Instructions
+                    @Html.EditorFor(model => model.ESInstructions, new { htmlAttributes = new { @class = "form-control", onblur = "UpdateSupplyOrder()", style = "max-width:620px;" } })
+                </div>
+            </div>
+
+            <br />
+
+            if (Model.SupplyItems != null && Model.SupplyItems.Count() > 0)
+            {
+                foreach (var item in Model.SupplyItems)
+                {
+                    <p>Supply Details</p>
+                    <div class="row">
+                        <div class="col-md-2">
+                            @Html.HiddenFor(modelItem => item.TransactionID)
+                            Quantity
+                            @Html.EditorFor(modelItem => item.UnitsSold, new { htmlAttributes = new { @class = "form-control", id = string.Format("item_UnitsSold_{0}", item.TransactionID), onblur = string.Format("UpdateSupplyItem({0})", item.TransactionID), style = "max-width:620px;" } })
+                        </div>
+                        <div class="col-md-6">
+                            Supply Item (Required)
+                            @Html.DropDownListFor(modelItem => item.ProductID, new SelectList(ViewBag.ProductsList, "Value", "Text", item.ProductID), " ", new { @class = "form-control", id = string.Format("item_ProductID_{0}", item.TransactionID), @onchange = string.Format("UpdateSupplyItem({0})", item.TransactionID), style = "max-width:620px;" })
+                        </div>
+                        <div class="col-md-2">
+                            Date
+                            @Html.EditorFor(model => item.TransactionDate, new { htmlAttributes = new { @class = "form-control datepicker", id = string.Format("item_TransactionDate_{0}", item.TransactionID), @onchange = string.Format("UpdateSupplyItem({0})", item.TransactionID) } })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            Description
+                            @Html.EditorFor(modelItem => item.TransactionDescription, new { htmlAttributes = new { @class = "form-control", id = string.Format("item_TransactionDescription_{0}", item.TransactionID), onblur = string.Format("UpdateSupplyItem({0})", item.TransactionID), style = "max-width:620px;" } })
+                        </div>
+                        <div class="col-md-4">
+                            Item Status
+                            @Html.DropDownListFor(modelItem => item.ItemStatusID, new SelectList(ViewBag.ItemStatusList, "Value", "Text", item.ItemStatusID), " ", new { @class = "form-control", id = string.Format("item_ItemStatusID_{0}", item.TransactionID), @onchange = string.Format("UpdateSupplyItem({0})", item.TransactionID), style = "max-width:620px;" })
+                        </div>
+                    </div>
+
+                    <hr />
+                }
+            }
+            <div class="row">
+                <div class="col-md-2">
+                    @Html.ActionLink("Add Supply", "AddSupplyItem", "Supply", new { so = Model.SupplyOrderID, eso = Model.ElecSupplyOrderNo }, new { @class = "link_small" })
+                </div>
+            </div>
+        }
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-3 pull-right" style="text-align:right;">
+            @Html.ActionLink("Done", "Order", "Supply", new { eo = Model.ElectionOrderNo }, new { @class = "btn btn-success link_small" })
+        </div>
+    </div>
+}
+else
+{
+
+}
+
+@section scripts{
+    <script type="text/javascript">
+        $(function () { // will trigger when the document is ready
+            $('.datepicker').datepicker(); //Initialise any date pickers
+        });
+
+        var applicationRoot = function () {
+            var appFolders = window.location.pathname.split('/');
+            return window.location.origin + "/" + appFolders[1];
+        }
+
+        var UpdateSupplyOrder = function () {
+            console.log($("#SupplyOrderForm").serialize());
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Supply/UpdateSupplyOrder",
+                data: $("#SupplyOrderForm").serialize(),
+                dataType: "json",
+                success: function (result) {
+
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Election Order did not save correctly.");
+                    }
+                }
+            });
+        };
+
+        var UpdateSupplyItem = function (id) {
+            console.log(id);
+
+            var supplyItem = {
+                TransactionID: id,
+                UnitsSold: $("#item_UnitsSold_" + id).val(),
+                ProductID: $("#item_ProductID_" + id).val(),
+                TransactionDate: $("#item_TransactionDate_" + id).val(),
+                TransactionDescription: $("#item_TransactionDescription_" + id).val(),
+                ItemStatusID: $("#item_ItemStatusID_" + id).val()
+            };
+            console.log(supplyItem);
+
+            var root = applicationRoot();
+            $.ajax({
+                type: "POST",
+                url: root + "/Supply/UpdateSupplyItem",
+                data: supplyItem,
+                dataType: "json",
+                success: function (result) {
+
+                },
+                error: function (result) {
+                    if (result == false) {
+                        alert("Supply item did not save correctly.");
+                    }
+                }
+            });
+        };
+    </script>
+}
+

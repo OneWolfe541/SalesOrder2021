@@ -1,0 +1,320 @@
+﻿@model List<SalesOrder2021.Models.BallotOrderDetails>
+
+@{
+    ViewBag.Title = "Ballot Order";
+}
+
+<style>
+    .table_header {
+        border: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_subheader {
+        border-bottom: 1px solid black;
+        padding: 5px;
+        font-weight: 600;
+    }
+
+    .table_content {
+        border: 1px solid black;
+        text-align: center;
+        vertical-align: top;
+        padding: 5px;
+    }
+
+    .table_content_large {
+        border: 1px solid black;
+        text-align: center;
+        font-size: 24px;
+        padding: 10px;
+    }
+
+    .row_separator {
+        border: 2px solid black;
+    }
+</style>
+
+<br />
+
+@if (Model != null)
+{
+    <div>
+        @Html.ActionLink("Sales Order", "Order", "Sales", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Election Order", "Order", "Election", new { eo = ViewBag.ElectionOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Ballot Order", "Order", "Ballot", new { eo = ViewBag.ElectionOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Supply Order", "Order", "Supply", new { eo = ViewBag.ElectionOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Custom Order", "Order", "Custom", new { eo = ViewBag.ElectionOrder }, new { @class = "btn btn-primary link_small" })
+    </div>
+
+    <br />
+
+    <div>
+        @Html.ActionLink("Add Ballot Order", "Create", "Ballot", new { eo = ViewBag.ElectionOrder }, new { @class = "link_small" })
+    </div>
+
+    var i = 0;
+    foreach (var item in Model)
+    {
+        { i++; }
+        <br />
+        <div class="col-lg-10 col-md-12">
+            @Html.HiddenFor(modelItem => item.BallotOrderNo, new { id = string.Format("item_BallotOrderNo_{0}", i) })
+            <h2 style="text-align:center;">@item.GovType Ballot Order @item.BallotOrderNo</h2>
+            @if (item.ElectionDate >= DateTime.Now.Date)
+            {
+                <p style="text-align:center; margin-top:-10px;">
+                    <a id="btnAdd" href="#" style="font-size:16px; text-align:center;" onclick="EditBallotOrder(@i)">Edit</a>
+                </p>
+            }
+            else
+            {
+                <p>&nbsp;</p>
+            }
+        </div>
+
+        <div class="form-horizontal">
+            <div class="row">
+                <div class="col-lg-5 col-md-7" style="min-width:500px;">
+                    <img src='@Url.Content("~/Images/AESslug.png")' width="460" />
+                </div>
+
+                <div class="col-md-5">
+                    <table style="width:100%;">
+                        <tr>
+                            <td class="table_header" style="text-align:right; border:0px solid transparent;">
+                                Ballot Order No
+                            </td>
+                            <td class="table_content" style="border:1px solid black;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.BallotOrderNo, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_header" style="text-align:right; border:0px solid transparent;">
+                                Sales Order No
+                            </td>
+                            <td class="table_content" style="border:1px solid black;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.SalesOrderNo, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_header" style="text-align:right; border:0px solid transparent;">
+                                Date of Entry
+                            </td>
+                            <td class="table_content" style="border:1px solid black;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.EntryDate, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-5 col-md-7">
+                    <table style="width:100%;">
+                        <tr>
+                            <td class="table_header">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.CustomerName, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left;">
+                                &nbsp;Contact:
+                                @Html.DisplayFor(modelItem => item.ContactName, new { htmlAttributes = new { @class = "form-control" } })
+                                &nbsp;Phone:
+                                @Html.DisplayFor(modelItem => item.ContactPhone, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left;">
+                                &nbsp;Email:
+                                @Html.DisplayFor(modelItem => item.ContactEmail, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                </div>
+
+                <div class="col-md-5">
+                    <table style="width:100%;">
+                        <tr>
+                            <td class="table_content" style="border:1px solid black; text-align:right;" colspan="2">
+                                Ballot Styles:
+                                @Html.DisplayFor(modelItem => item.Districts, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                &nbsp;
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="border:1px solid black; text-align:right;" colspan="2">
+                                Last Updated:
+                                @Html.DisplayFor(modelItem => item.LastUpdate, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-10 col-md-12">
+                    <table style="width:100%;">
+                        <tr>
+                            <td class="table_header" style="text-align:left; border:0px solid transparent; width:75%;">
+                                Election Title
+                            </td>
+                            <td class="table_header" style="text-align:left; border:0px solid transparent;">
+                                Election Date
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left; border:1px solid black; width:75%;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.ElectionTitle, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="table_content" style="text-align:left; border:1px solid black;">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.ElectionDate, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_header" style="text-align:left; border:0px solid transparent;" colspan="2">
+                                Special Instructions
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table_content" style="text-align:left; border:1px solid black;" colspan="2">
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.BOInstructions, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-10 col-md-12">
+                    @foreach (var subitem in item.BallotStyles)
+                    {
+                        <hr class="row_separator" />
+                        <table style="width:100%;">
+                            <tr>
+                                <td class="table_header" style="text-align:left; border:1px solid gray; border-bottom:1px solid black;" colspan="2">
+                                    Ballot Style Name
+                                </td>
+                                <td class="table_header" style="text-align:left; border:1px solid gray; border-bottom:1px solid black;">
+                                    Style Color
+                                </td>
+                                <td class="table_header" style="text-align:center; border:1px solid gray; border-bottom:1px solid black;">
+                                    Two Sides
+                                </td>
+                                <td class="table_header" style="text-align:center; border:1px solid gray; border-bottom:1px solid black;">
+                                    Add Colors
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="table_content" style="text-align:left; border:1px solid black;" colspan="2">
+                                    &nbsp;
+                                    @Html.DisplayFor(modelItem => subitem.StyleName1, new { htmlAttributes = new { @class = "form-control" } })
+                                    &nbsp;
+                                    @Html.DisplayFor(modelItem => subitem.StyleName2, new { htmlAttributes = new { @class = "form-control" } })
+                                </td>
+                                <td class="table_content" style="text-align:left; border:1px solid black;">
+                                    &nbsp;
+                                    @Html.DisplayFor(modelItem => subitem.StyleColor, new { htmlAttributes = new { @class = "form-control" } })
+                                </td>
+                                <td class="table_content" style="text-align:center; border:1px solid black;">
+                                    <label><input type="checkbox" value="" checked="@subitem.TwoSides" /></label>
+                                </td>
+                                <td class="table_content" style="text-align:center; border:1px solid black;">
+                                    <label><input type="checkbox" value="" checked="@subitem.AddColors" /></label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    &nbsp;
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="table_header" style="text-align:center; border:1px solid gray; border-bottom:1px solid black;">
+                                    Quantity
+                                </td>
+                                <td class="table_header" style="text-align:left; border:1px solid gray; border-bottom:1px solid black;">
+                                    Ballot
+                                </td>
+                                <td class="table_header" style="text-align:center; border:1px solid gray; border-bottom:1px solid black;">
+                                    Start No
+                                </td>
+                                <td class="table_header" style="text-align:center; border:1px solid gray; border-bottom:1px solid black;">
+                                    End No
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td class="table_content" style="text-align:center; border:1px solid black;">
+                                    &nbsp;
+                                    @Html.DisplayFor(modelItem => subitem.Quantity, new { htmlAttributes = new { @class = "form-control" } })
+                                </td>
+                                <td class="table_content" style="text-align:left; border:1px solid black;">
+                                    &nbsp;
+                                    @Html.DisplayFor(modelItem => subitem.BallotTypes, new { htmlAttributes = new { @class = "form-control" } })
+                                </td>
+                                <td class="table_content" style="text-align:center; border:1px solid black;">
+                                    &nbsp;
+                                    @Html.DisplayFor(modelItem => subitem.StartNo, new { htmlAttributes = new { @class = "form-control" } })
+                                </td>
+                                <td class="table_content" style="text-align:center; border:1px solid black;">
+                                    &nbsp;
+                                    @Html.DisplayFor(modelItem => subitem.EndNo, new { htmlAttributes = new { @class = "form-control" } })
+                                </td>
+                            </tr>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+        <br />
+    }
+}
+else
+{
+    <div>
+        @Html.ActionLink("Election Order", "Order", "Election", new { so = ViewBag.SalesOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Ballot Order", "Order", "Ballot", new { eo = ViewBag.ElectionOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Supply Order", "Order", "Supply", new { eo = ViewBag.ElectionOrder }, new { @class = "btn btn-primary link_small" })
+
+        @Html.ActionLink("Custom Order", "Order", "Custom", new { eo = ViewBag.ElectionOrder }, new { @class = "btn btn-primary link_small" })
+    </div>
+
+    <br />
+
+    <div>
+        @Html.ActionLink("Add Ballot Order", "Create", "Ballot", new { eo = ViewBag.ElectionOrder }, new { @class = "link_small" })
+    </div>
+
+    <h2 style="text-align:center;">Ballot Order</h2>
+}
+
+@section scripts{
+    <script type="text/javascript">
+        var EditBallotOrder = function (id) {
+            console.log($("#item_BallotOrderNo_" + id).val());
+            window.location.replace("../Ballot/Edit?bo=" + $("#item_BallotOrderNo_" + id).val());
+        };
+    </script>
+}
